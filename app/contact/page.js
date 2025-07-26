@@ -4,8 +4,87 @@ import Layout from "@/components/layout/Layout";
 import Link from "next/link";
 import cx from "classnames";
 import { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import ar from "date-fns/locale/ar";
+import { registerLocale } from "react-datepicker";
+import LoadingButton from "@/components/ui/LoadingButton";
+import { toast } from "@/components/ui/Toast";
+
+registerLocale("ar", ar);
+
 export default function Home() {
-  const [isCompanyContact, setIsCompanyContact] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    message: "",
+  });
+
+  const timeSlots = [];
+  for (let hour = 2; hour < 8; hour++) {
+    timeSlots.push(`${hour}:00 - ${hour}:30`);
+    timeSlots.push(`${hour}:30 - ${hour + 1}:00`);
+  }
+
+  timeSlots.push("8:00 - 8:30");
+
+  const CustomDateInput = ({ value, onClick }) => (
+    <div
+      className="glassy border py-0 h-[56px] focus:!border-blue-500 focus-visible:outline-none w-full focus:scale-103 placeholder:text-black !shadow-none focus:!shadow-2xl transition flex items-center px-4 cursor-pointer"
+      onClick={onClick}
+    >
+      {value || "اختر التاريخ"}
+    </div>
+  );
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    // Validate form
+    if (!formData.name || !formData.phone) {
+      toast.error("يرجى إدخال الاسم ورقم الهاتف");
+
+      setLoading(false);
+      return;
+    }
+
+    // Simulate API call
+    try {
+      // Simulate network delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      // Show success message
+      toast.success("تم إرسال رسالتك بنجاح، سنتواصل معك قريباً");
+
+      // Reset form
+      setFormData({
+        name: "",
+        phone: "",
+        message: "",
+      });
+      setSelectedDate(null);
+      setSelectedTimeSlot("");
+      setSelectedType("");
+    } catch (error) {
+      toast.error("حدث خطأ أثناء إرسال رسالتك، يرجى المحاولة مرة أخرى");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Layout headerStyle={3} footerStyle={3} breadcrumbTitle="تواصل معنا">
@@ -14,13 +93,13 @@ export default function Home() {
           <div className="container">
             <div className="row">
               <div className="col-xl-6 col-lg-6">
-                <div className="contact-page__left glassy-1">
+                <div className="contact-page__left glassy-1 !overflow-visible">
                   <div className="flex items-center justify-between">
                     <h3 className="contact-page__title">تواصل معنا</h3>
                   </div>
 
                   <form
-                    action="assets/inc/sendemail.php"
+                    onSubmit={handleSubmit}
                     className="contact-page__form contact-form-validated"
                   >
                     <div className="row">
@@ -28,93 +107,100 @@ export default function Home() {
                         <div className="contact-page__form-input-box">
                           <input
                             type="text"
-                            placeholder={
-                              isCompanyContact ? "اسم الشركة" : "الاسم"
-                            }
+                            placeholder={"الاسم"}
                             name="name"
+                            value={formData.name}
+                            onChange={handleInputChange}
                             className="glassy border focus:!border-blue-500 focus:scale-105  placeholder:text-black !shadow-none focus:!shadow-2xl transition"
                           />
                         </div>
                       </div>
-                      <div className="col-xl-6">
-                        <div className="contact-page__form-input-box">
-                          <input
-                            type="email"
-                            placeholder={
-                              isCompanyContact
-                                ? "البريد الإلكتروني"
-                                : "البريد الإلكتروني"
-                            }
-                            name="email"
-                            className="glassy border focus:!border-blue-500 focus:scale-105  placeholder:text-black !shadow-none focus:!shadow-2xl transition"
-                          />
-                        </div>
-                      </div>
+
                       <div className="col-xl-6">
                         <div className="contact-page__form-input-box">
                           <input
                             type="text"
-                            placeholder={
-                              isCompanyContact ? "الموضوع" : "الموضوع"
-                            }
-                            name="Subject"
+                            placeholder={"رقم الهاتف"}
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleInputChange}
                             className="glassy border focus:!border-blue-500 focus:scale-105  placeholder:text-black !shadow-none focus:!shadow-2xl transition"
                           />
                         </div>
                       </div>
-                      <div className="col-xl-6">
+                      <div className="col-xl-4">
                         <div className="contact-page__form-input-box">
-                          <input
-                            type="text"
-                            placeholder={
-                              isCompanyContact ? "رقم الهاتف" : "رقم الهاتف"
-                            }
-                            name="Phone Number"
-                            className="glassy border focus:!border-blue-500 focus:scale-105  placeholder:text-black !shadow-none focus:!shadow-2xl transition"
+                          <DatePicker
+                            selected={selectedDate}
+                            onChange={(date) => setSelectedDate(date)}
+                            locale="ar"
+                            dateFormat="dd/MM/yyyy"
+                            customInput={<CustomDateInput />}
+                            calendarClassName="rtl"
+                            minDate={new Date()}
                           />
+                        </div>
+                      </div>
+                      <div className="col-xl-4">
+                        <div className="contact-page__form-input-box">
+                          <select
+                            name="timeSlot"
+                            value={selectedTimeSlot}
+                            onChange={(e) =>
+                              setSelectedTimeSlot(e.target.value)
+                            }
+                            className="glassy border !px-[17px] py-0 h-[56px] focus:!border-blue-500 focus-visible:outline-none w-full focus:scale-103 placeholder:text-black !shadow-none focus:!shadow-2xl transition"
+                          >
+                            <option value="">اختر وقت الموعد</option>
+                            {timeSlots.map((slot, index) => (
+                              <option key={index} value={slot}>
+                                {slot}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="col-xl-4">
+                        <div className="contact-page__form-input-box">
+                          <select
+                            name="type"
+                            value={selectedType}
+                            onChange={(e) => setSelectedType(e.target.value)}
+                            className="glassy border !px-[17px] py-0 h-[56px] focus:!border-blue-500 focus-visible:outline-none w-full focus:scale-103 placeholder:text-black !shadow-none focus:!shadow-2xl transition"
+                          >
+                            <option className="text-[18px]" value="">
+                              اختر نوع الكشف
+                            </option>
+                            <option className="text-[18px]" value="1">
+                              أول مرة
+                            </option>
+                            <option className="text-[18px]" value="2">
+                              إعادة
+                            </option>
+                          </select>
                         </div>
                       </div>
                     </div>
-                    {isCompanyContact && (
-                      <div className="col-xl-12">
-                        <div className="contact-page__form-input-box">
-                          <input
-                            type="text"
-                            placeholder="الموقع الإلكتروني (اختياري)"
-                            name="Address"
-                            className="glassy border focus:!border-blue-500 focus:scale-105  placeholder:text-black !shadow-none focus:!shadow-2xl transition"
-                          />
-                        </div>
-                      </div>
-                    )}
 
                     <div className="row">
                       <div className="col-xl-12">
                         <div className="contact-page__form-input-box text-message-box">
                           <textarea
                             name="message"
-                            placeholder={
-                              isCompanyContact ? "تعليق الشركة" : "تعليق"
-                            }
+                            placeholder={"تعليق"}
+                            value={formData.message}
+                            onChange={handleInputChange}
                             className="glassy border focus:!border-blue-500 focus:scale-105 placeholder:text-black !shadow-none focus:!shadow-2xl transition"
                           ></textarea>
                         </div>
-                        <div className=" contact-page__btn-box !flex !items-center !justify-between ">
-                          <Link
-                            href="about"
-                            className="thm-btn contact-page__btn"
+                        <div className="contact-page__btn-box !flex !items-center !justify-between">
+                          <LoadingButton
+                            type="submit"
+                            loading={loading}
+                            className="contact-page__btn"
                           >
                             إرسال رسالة
-                          </Link>
-
-                          {/* <p
-                            onClick={() =>
-                              setIsCompanyContact(!isCompanyContact)
-                            }
-                            className="text-sm text-blue-500 font-bold cursor-pointer"
-                          >
-                            {isCompanyContact ? "تواصل شخصي" : "تواصل شخصي"}
-                          </p> */}
+                          </LoadingButton>
                         </div>
                       </div>
                     </div>
@@ -169,7 +255,7 @@ export default function Home() {
                             <span className="icon-call"></span>
                           </div>
                           <div className="text">
-                            <p>
+                            <p style={{ direction: "ltr" }}>
                               <Link href="tel:+201065014391">01065014391</Link>
                             </p>
                           </div>

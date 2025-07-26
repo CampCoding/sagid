@@ -128,7 +128,9 @@ const MobileMenu = ({ isSidebar, handleMobileMenu, handleSidebar }) => {
             </li>
             <li>
               <i className="fa fa-phone-alt"></i>
-              <Link href="tel:+201065014391">+20 10 6501 4391</Link>
+              <Link style={{ direction: "ltr" }} href="tel:+201065014391">
+                +20 10 6501 4391
+              </Link>
             </li>
           </ul>
           <div className="mobile-nav__top">

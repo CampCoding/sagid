@@ -419,7 +419,7 @@ export default function About() {
                   </div>
                   <div className="content">
                     <span>راسلنا عبر الواتساب</span>
-                    <p>
+                    <p style={{ direction: "ltr" }}>
                       <Link href="https://wa.me/201065014391">
                         +20 10 6501 4391
                       </Link>
@@ -432,7 +432,7 @@ export default function About() {
                   </div>
                   <div className="content">
                     <span>اتصل بنا هاتفياً</span>
-                    <p>
+                    <p style={{ direction: "ltr" }}>
                       <Link href="tel:+201065014391">+20 10 6501 4391</Link>{" "}
                     </p>
                   </div>

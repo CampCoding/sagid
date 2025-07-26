@@ -19,7 +19,7 @@ export default function Header3({ scroll, handlePopup, handleMobileMenu }) {
                       direction: "ltr",
                     }}
                   >
-                    <p>
+                    <p style={{ direction: "ltr" }}>
                       <Link href="tel:+201065014391">01065014391</Link>
                     </p>
                   </div>
@@ -88,13 +88,13 @@ export default function Header3({ scroll, handlePopup, handleMobileMenu }) {
                     <Menu />
                   </div>
                   <div className="main-menu-two__search-cart-btn-box">
-                    <div className="main-menu-two__search-box">
+                    {/* <div className="main-menu-two__search-box">
                       <Link
                         href="#"
                         className="main-menu-two__search search-toggler icon-search-interface-symbol"
                         onClick={handlePopup}
                       ></Link>
-                    </div>
+                    </div> */}
                     {/* <div className="main-menu-two__cart-box">
                                         <Link href="cart" className="main-menu-two__cart fas fa-shopping-cart"></Link>
                                     </div> */}
@@ -148,13 +148,13 @@ export default function Header3({ scroll, handlePopup, handleMobileMenu }) {
                       <Menu />
                     </div>
                     <div className="main-menu-two__search-cart-btn-box">
-                      <div className="main-menu-two__search-box">
+                      {/* <div className="main-menu-two__search-box">
                         <Link
                           href="#"
                           className="main-menu-two__search search-toggler icon-search-interface-symbol"
                           onClick={handlePopup}
                         ></Link>
-                      </div>
+                      </div> */}
 
                       <div className="main-menu-two__btn-box">
                         <Link

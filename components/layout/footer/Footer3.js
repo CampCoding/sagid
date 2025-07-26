@@ -40,13 +40,19 @@ export default function Footer3() {
                   <div className="footer-widget__social-box">
                     <h4 className="footer-widget__social-title">تواصل معنا</h4>
                     <div className="site-footer__social">
-                      <Link href="https://www.twitter.com/" target="_blank">
+                      <Link href="https://x.com/LoaiSaged" target="_blank">
                         <i className="fab fa-twitter"></i>
                       </Link>
-                      <Link href="https://www.facebook.com/" target="_blank">
+                      <Link
+                        href="https://www.facebook.com/SaGeDLoAi"
+                        target="_blank"
+                      >
                         <i className="fab fa-facebook"></i>
                       </Link>
-                      <Link href="https://www.instagram.com/" target="_blank">
+                      <Link
+                        href="https://www.instagram.com/sagedlaoi/"
+                        target="_blank"
+                      >
                         <i className="fab fa-instagram"></i>
                       </Link>
                     </div>
@@ -54,7 +60,7 @@ export default function Footer3() {
                 </div>
               </div>
               <div
-                className="col-xl-2 col-lg-6 col-md-6 wow fadeInUp"
+                className="col-xl-4 col-lg-6 col-md-6 wow fadeInUp"
                 data-wow-delay="200ms"
               >
                 <div className="footer-widget__column footer-widget__links">
@@ -78,7 +84,7 @@ export default function Footer3() {
                 </div>
               </div>
               <div
-                className="col-xl-3 col-lg-6 col-md-6 wow fadeInUp"
+                className="col-xl-4 col-lg-6 col-md-6 wow fadeInUp"
                 data-wow-delay="300ms"
               >
                 <div className="footer-widget__column footer-widget__services">
@@ -109,7 +115,7 @@ export default function Footer3() {
                   </ul>
                 </div>
               </div>
-              <div
+              {/* <div
                 className="col-xl-3 col-lg-6 col-md-6 wow fadeInUp"
                 data-wow-delay="400ms"
               >
@@ -136,7 +142,7 @@ export default function Footer3() {
                     كن على تواصل دائم واشترك في نشرتنا الإخبارية.
                   </p>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

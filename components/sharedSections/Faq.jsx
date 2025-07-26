@@ -46,11 +46,11 @@ const Faq = () => {
                 نحن هنا لمساعدتك. إذا لم تجد سؤالك في القائمة، لا تتردد في
                 التواصل مع فريق الدعم في أي وقت.
               </p>
-              <div className="faq-one__btn-box">
+              {/* <div className="faq-one__btn-box">
                 <Link href="#" className=" thm-btn faq-one__btn">
                   اسأل أسئلتك هنا
                 </Link>
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="col-xl-6 col-lg-6">

@@ -32,7 +32,7 @@ export default function Contact() {
               className="contact-one__form contact-form-validated"
             >
               <div className="row">
-                <div className="col-xl-4 col-lg-4">
+                <div className="col-xl-6 col-lg-6">
                   <div className="contact-form__input-box">
                     <input
                       type="text"
@@ -42,22 +42,12 @@ export default function Contact() {
                     />
                   </div>
                 </div>
-                <div className="col-xl-4 col-lg-4">
-                  <div className="contact-form__input-box">
-                    <input
-                      type="email"
-                      placeholder="البريد الإلكتروني"
-                      name="email"
-                      className="text-white placeholder:text-gray-200"
-                    />
-                  </div>
-                </div>
-                <div className="col-xl-4 col-lg-4">
+                <div className="col-xl-6 col-lg-6">
                   <div className="contact-form__input-box">
                     <input
                       type="text"
-                      placeholder="الموضوع"
-                      name="subject"
+                      placeholder="رقم الهاتف"
+                      name="phone"
                       className="text-white placeholder:text-gray-200"
                     />
                   </div>

@@ -2,61 +2,37 @@
 import Layout from "@/components/layout/Layout";
 import Link from "next/link";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
-import DeviceType from "../../components/BookService/DeviceType";
-import { Collapse } from "antd";
-import DeviceBrand from "../../components/BookService/DeviceBrand";
-import BrandDevices from "../../components/BookService/BrandDevices";
-import DeviceFixPrice from "./../../components/BookService/DeviceFixPrice";
-import { useEffect, useLayoutEffect, useState, useTransition } from "react";
-import cx from "classnames";
-import BookingModal from "../../components/BookService/BookingModal";
+
 import Testimonials from "../../components/sharedSections/Testimonials";
-import BeforeAfterSliderComponent from "../../components/BeforeAndAfter";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { registerLocale, setDefaultLocale } from "react-datepicker";
+import { registerLocale } from "react-datepicker";
 import ar from "date-fns/locale/ar";
+import { useState } from "react";
+import LoadingButton from "@/components/ui/LoadingButton";
+import Toast, { toast } from "@/components/ui/Toast";
 
-// Register Arabic locale
 registerLocale("ar", ar);
 
-const swiperOptions = {
-  modules: [Autoplay, Pagination, Navigation],
-  slidesPerView: 1,
-  spaceBetween: 30,
-  // autoplay: {
-  //     delay: 2500,
-  //     disableOnInteraction: false,
-  // },
-  loop: true,
-
-  // Navigation
-  navigation: {
-    nextEl: ".srn",
-    prevEl: ".srp",
-  },
-
-  // Pagination
-  pagination: {
-    el: ".swiper-pagination",
-    clickable: true,
-  },
-};
 export default function Home() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const [selectedType, setSelectedType] = useState("");
-  // Generate time slots from 2:00 PM to 8:00 PM with 30-minute intervals
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    message: "",
+  });
+
   const timeSlots = [];
   for (let hour = 2; hour < 8; hour++) {
     timeSlots.push(`${hour}:00 - ${hour}:30`);
     timeSlots.push(`${hour}:30 - ${hour + 1}:00`);
   }
-  // Add the last slot
+
   timeSlots.push("8:00 - 8:30");
 
-  // Custom input to make the entire field clickable
   const CustomDateInput = ({ value, onClick }) => (
     <div
       className="glassy border py-0 h-[56px] focus:!border-blue-500 focus-visible:outline-none w-full focus:scale-103 placeholder:text-black !shadow-none focus:!shadow-2xl transition flex items-center px-4 cursor-pointer"
@@ -65,6 +41,55 @@ export default function Home() {
       {value || "اختر التاريخ"}
     </div>
   );
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    // Validate form
+    if (
+      !formData.name ||
+      !formData.phone ||
+      !selectedDate ||
+      !selectedTimeSlot ||
+      !selectedType
+    ) {
+      toast.error("يرجى ملء جميع الحقول المطلوبة");
+      setLoading(false);
+      return;
+    }
+
+    // Simulate API call
+    try {
+      // Simulate network delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      // Show success message
+      toast.success("تم حجز موعدك بنجاح، سنتواصل معك قريباً");
+
+      // Reset form
+      setFormData({
+        name: "",
+        phone: "",
+        message: "",
+      });
+      setSelectedDate(null);
+      setSelectedTimeSlot("");
+      setSelectedType("");
+    } catch (error) {
+      toast.error("حدث خطأ أثناء حجز موعدك، يرجى المحاولة مرة أخرى");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="relative bg-[#ffffff61]">
@@ -85,40 +110,13 @@ export default function Home() {
               </h2>
             </div>
 
-            {/* <div className="flex items-center justify-center my-4">
-              <div
-                onClick={() => {
-                  if (
-                    selectedData.type &&
-                    selectedData.brand &&
-                    selectedData.ver &&
-                    selectedData.whatToFix.length > 0
-                  ) {
-                    setOpenBookingModal(true);
-                  }
-                }}
-                className={cx(
-                  "thm-btn contact-page-two__btn ",
-
-                  selectedData.type &&
-                    selectedData.brand &&
-                    selectedData.ver &&
-                    selectedData.whatToFix.length > 0
-                    ? "cursor-pointer"
-                    : "opacity-50 !cursor-not-allowed pointer-events-none"
-                )}
-              >
-                Book Now
-              </div>
-            </div> */}
-
             <div className="contact-page__left glassy-1 !overflow-visible">
               <div className="flex items-center justify-between">
                 <h3 className="contact-page__title">تواصل معنا</h3>
               </div>
 
               <form
-                action="assets/inc/sendemail.php"
+                onSubmit={handleSubmit}
                 className="contact-page__form contact-form-validated"
               >
                 <div className="row">
@@ -128,28 +126,9 @@ export default function Home() {
                         type="text"
                         placeholder={"الاسم"}
                         name="name"
-                        className="glassy border focus:!border-blue-500 focus:scale-103  placeholder:text-black !shadow-none focus:!shadow-2xl transition"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-xl-6">
-                    <div className="contact-page__form-input-box">
-                      <input
-                        type="email"
-                        placeholder={"البريد الإلكتروني"}
-                        name="email"
-                        className="glassy border focus:!border-blue-500 focus:scale-103  placeholder:text-black !shadow-none focus:!shadow-2xl transition"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-xl-6">
-                    <div className="contact-page__form-input-box">
-                      <input
-                        type="text"
-                        placeholder={"الموضوع"}
-                        name="Subject"
-                        className="glassy border focus:!border-blue-500 focus:scale-103  placeholder:text-black !shadow-none focus:!shadow-2xl transition"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        className="glassy border focus:!border-blue-500 focus:scale-103 placeholder:text-black !shadow-none focus:!shadow-2xl transition"
                       />
                     </div>
                   </div>
@@ -158,8 +137,10 @@ export default function Home() {
                       <input
                         type="text"
                         placeholder={"رقم الهاتف"}
-                        name="Phone Number"
-                        className="glassy border focus:!border-blue-500 focus:scale-103  placeholder:text-black !shadow-none focus:!shadow-2xl transition"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className="glassy border focus:!border-blue-500 focus:scale-103 placeholder:text-black !shadow-none focus:!shadow-2xl transition"
                       />
                     </div>
                   </div>
@@ -222,33 +203,25 @@ export default function Home() {
                       <textarea
                         name="message"
                         placeholder={"تعليق"}
+                        value={formData.message}
+                        onChange={handleInputChange}
                         className="glassy border focus:!border-blue-500 focus:scale-103 placeholder:text-black !shadow-none focus:!shadow-2xl transition"
                       ></textarea>
                     </div>
-                    <div className=" contact-page__btn-box !flex !items-center !justify-between ">
-                      <Link href="about" className="thm-btn contact-page__btn">
+                    <div className="contact-page__btn-box !flex !items-center !justify-between">
+                      <LoadingButton
+                        type="submit"
+                        loading={loading}
+                        className="contact-page__btn"
+                      >
                         إرسال رسالة
-                      </Link>
-
-                      {/* <p
-                            onClick={() =>
-                              setIsCompanyContact(!isCompanyContact)
-                            }
-                            className="text-sm text-blue-500 font-bold cursor-pointer"
-                          >
-                            {isCompanyContact ? "تواصل شخصي" : "تواصل شخصي"}
-                          </p> */}
+                      </LoadingButton>
                     </div>
                   </div>
                 </div>
               </form>
             </div>
           </div>
-
-          {/* <BookingModal
-            open={openBookingModal}
-            onCancel={() => setOpenBookingModal(false)}
-          /> */}
         </section>
 
         <section className="book-service">
@@ -366,8 +339,8 @@ export default function Home() {
                     <div className="content">
                       <span>أرسل لنا بريدًا إلكترونيًا</span>
                       <p>
-                        <Link href="mailto:info@dentalclinic.com">
-                          info@dentalclinic.com
+                        <Link href="mailto:sagedloai884@gmail.com">
+                          sagedloai884@gmail.com
                         </Link>
                       </p>
                     </div>
