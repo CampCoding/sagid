@@ -109,7 +109,28 @@ h6 {
 }
 
 p {
-  margin: 0;
+  margin: 0 !important;
+}
+.custom-select .ant-select-selection-search-input {
+  text-align: right !important;
+  direction: rtl !important;
+  color: #000 !important;
+  font-family: inherit !important;
+}
+
+.select-no-scrollchain .rc-virtual-list,
+.select-no-scrollchain .rc-virtual-list-holder {
+  overscroll-behavior: contain; /* prevent body scroll chaining */
+}
+
+.custom-select .ant-select-selector .ant-select-selection-search {
+  right: 20px !important;
+  left: auto !important;
+}
+
+.custom-select .ant-select-selection-placeholder {
+  right: 20px !important;
+  left: auto !important;
 }
 
 dl,
@@ -8046,7 +8067,7 @@ ul {
 
 .contact-page__form-input-box input[type="text"],
 .contact-page__form-input-box input[type="email"] {
-  height: 56px;
+  /* height: 56px; */
   width: 100%;
   border: none;
   background-color: var(--saged-white);
@@ -8062,7 +8083,7 @@ ul {
 .contact-page__form-input-box textarea {
   font-size: 16px;
   color: var(--saged-gray);
-  height: 205px;
+  height: 100px;
   width: 100%;
   background-color: var(--saged-white);
   border-radius: var(--saged-bdr-radius);
@@ -8072,7 +8093,7 @@ ul {
 }
 
 .contact-page__form-input-box.text-message-box {
-  height: 205px;
+  height: 100px;
 }
 
 .contact-page__btn-box {
