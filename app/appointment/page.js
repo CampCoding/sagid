@@ -16,7 +16,7 @@ import { useState, useEffect } from "react";
 import LoadingButton from "@/components/ui/LoadingButton";
 import Toast, { toast } from "@/components/ui/Toast";
 import { ChevronDown } from "lucide-react";
-import { base_url } from "../../utils/base_url";
+import { sec_base_url } from "../../utils/base_url";
 
 registerLocale("ar", ar);
 
@@ -143,6 +143,10 @@ export default function Home() {
   const [examinationTypes, setExaminationTypes] = useState([]);
   const [examinationPrices, setExaminationPrices] = useState({});
 
+  useEffect(() => {
+    console.log(examinationTypes, "examinationTypes");
+  }, [examinationTypes]);
+
   // Doctors data from API
   const [doctors, setDoctors] = useState([]);
   const [doctorsLoading, setDoctorsLoading] = useState(false);
@@ -180,7 +184,7 @@ export default function Home() {
 
   useEffect(() => {
     axios
-      .get(base_url + `/admin/doctors/select_doctors.php`)
+      .get(sec_base_url + `/admin/doctors/select_doctors.php`)
       .then((res) => {
         if (res.data.status === "success") {
           setDoctors(res?.data?.massage);
@@ -195,7 +199,7 @@ export default function Home() {
     const fetchMaterials = async () => {
       try {
         const response = await axios.get(
-          `${base_url}/admin/material/select_material.php`
+          `${sec_base_url}/admin/material/select_material.php`
         );
 
         if (response.data.status === "success") {
@@ -307,7 +311,7 @@ export default function Home() {
   // API call functions using axios
   const addPatient = async (patientData) => {
     const response = await axios.post(
-      `${base_url}/admin/patient/add_patient.php`,
+      `${sec_base_url}/admin/patient/add_patient.php`,
       patientData
     );
     return response.data;
@@ -315,7 +319,7 @@ export default function Home() {
 
   const addAppointment = async (appointmentData) => {
     const response = await axios.post(
-      `${base_url}/admin/appointments/add_appointment.php`,
+      `${sec_base_url}/admin/appointments/add_appointment.php`,
       appointmentData
     );
     return response.data;

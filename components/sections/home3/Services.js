@@ -14,7 +14,7 @@ import Blurry from "./../../ui/blurry";
 import { useRouter } from "next/navigation";
 import { LettersPullUp } from "./../../ui/LettersPullUp";
 
-export default function TechRepairServices() {
+export default function TechRepairServices({ services }) {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -22,54 +22,31 @@ export default function TechRepairServices() {
     setIsVisible(true);
   }, []);
 
-  const services = [
-    {
-      id: 1,
-      title: "الفحص والتنظيف الوقائي",
-      description: "علاج الأسنان الاحترافي بتقنيات طبية متقدمة وحرفية عالية",
-      icon: Smartphone,
-      image:
-        "https://res.cloudinary.com/dkc5klynm/image/upload/v1752393734/atikah-akhtar-hKaYlAF1nDw-unsplash_11zon_v3dcjj.jpg",
-      features: [
-        "كشف شامل باستخدام األشعة الرقمية",
-        "إزالة الجير وتلميع الأسنان",
-        "حماية بالفلورايد وتوجيهات للعناية المنزلية",
-      ],
-      color: "from-yellow-500 to-yellow-400",
-      path: "appointment",
-    },
-    {
-      id: 2,
-      title: "حشوات الأسنان التجميلية",
-      description:
-        "حشوات تجميلية بلون الأسنان لملء العيوب واستعادة الشكل الطبيعي والقوة في جلسة واحدة.",
-      icon: Tablet,
-      image:
-        "https://res.cloudinary.com/dkc5klynm/image/upload/v1752392183/pexels-cedric-fauntleroy-4269684_11zon_zhdgyn.jpg",
-      features: [
-        "حشوات بلون السن الطبيعي (كومبوزيت)",
-        "علاج يتتسعل واالتسوس والحشوا بالع عالیب",
-      ],
-      color: "from-yellow-500 to-yellow-400",
-      path: "appointment",
-    },
-    {
-      id: 3,
-      title: "جراحات الفم",
-      description: "جراحات صغيرة لعالج التهابات أو مشاكل فموية",
-      icon: Laptop,
-      image:
-        "https://res.cloudinary.com/dkc5klynm/image/upload/v1752391989/pexels-karolina-grabowska-6627567_11zon_ykqofi.jpg",
-      features: [
-        "خلع ضروس العقل والضروس المطمورة",
-        "جراحات صغيرة لعالج التهابات أو مشاكل فموية",
-      ],
-      color: "from-yellow-500 to-yellow-400",
-      path: "appointment",
-    },
-  ];
-
   const router = useRouter();
+
+  // Icon mapping
+  const iconMap = {
+    0: Smartphone,
+    1: Tablet,
+    2: Laptop,
+  };
+
+  // Process services from API
+  const processedServices =
+    services
+      ?.filter((service) => service.selected === "yes")
+      ?.map((service, index) => ({
+        id: service.id,
+        title: service.title,
+        description: service.features?.split("**CAMP**")[0] || "",
+        icon: iconMap[index] || Smartphone,
+        image: service.image,
+        features: service.features
+          ? service.features.split("**CAMP**").filter(Boolean)
+          : [],
+        color: "from-yellow-500 to-yellow-400",
+        path: "appointment",
+      })) || [];
 
   return (
     <div className="relative min-h-screen   overflow-hidden">
@@ -121,7 +98,7 @@ export default function TechRepairServices() {
 
         {/* Services Grid */}
         <div className="flex  flex-col lg:flex-row  items-start justify-center  gap-8 max-w-7xl mx-auto">
-          {services.map((service, index) => {
+          {processedServices.map((service, index) => {
             const Icon = service.icon;
             const isHovered = hoveredCard === service.id;
 

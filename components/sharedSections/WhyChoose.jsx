@@ -1,7 +1,17 @@
 import Link from "next/link";
 import React from "react";
 
-const WhyChoose = () => {
+const WhyChoose = ({ whyUs }) => {
+  // Icon mapping
+  const iconMap = [
+    "icon-award",
+    "icon-customer-service",
+    "icon-security",
+    "icon-computer-1",
+  ];
+
+  const delays = ["100ms", "200ms", "300ms", "400ms"];
+
   return (
     <section className="why-choose-one" dir="rtl">
       <div className="container">
@@ -14,75 +24,100 @@ const WhyChoose = () => {
           </p>
         </div>
         <div className="row">
-          <div
-            className="col-xl-6 col-lg-6 wow fadeInUp"
-            data-wow-delay="100ms"
-          >
-            <div className="why-choose-one__single glassy-1">
-              <div className="why-choose-one__icon">
-                <span className="icon-award"></span>
+          {whyUs && whyUs.length > 0 ? (
+            whyUs.map((item, index) => (
+              <div
+                key={item.id}
+                className="col-xl-6 col-lg-6 wow fadeInUp"
+                data-wow-delay={delays[index] || "100ms"}
+              >
+                <div className="why-choose-one__single glassy-1">
+                  <div className="why-choose-one__icon">
+                    <span className={iconMap[index] || "icon-award"}></span>
+                  </div>
+                  <div className="why-choose-one__content">
+                    <h3 className="why-choose-one__title">{item.title}</h3>
+                    <p className="why-choose-one__text">{item.description}</p>
+                  </div>
+                </div>
               </div>
-              <div className="why-choose-one__content">
-                <h3 className="why-choose-one__title">
-                  ضمان على جميع العلاجات
-                </h3>
-                <p className="why-choose-one__text">
-                  نوقف خلف عملنا — جميع العلاجات تأتي بضمان موثوق لراحتك.
-                </p>
+            ))
+          ) : (
+            // Fallback
+            <>
+              <div
+                className="col-xl-6 col-lg-6 wow fadeInUp"
+                data-wow-delay="100ms"
+              >
+                <div className="why-choose-one__single glassy-1">
+                  <div className="why-choose-one__icon">
+                    <span className="icon-award"></span>
+                  </div>
+                  <div className="why-choose-one__content">
+                    <h3 className="why-choose-one__title">
+                      ضمان على جميع العلاجات
+                    </h3>
+                    <p className="why-choose-one__text">
+                      نوقف خلف عملنا — جميع العلاجات تأتي بضمان موثوق لراحتك.
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div
-            className="col-xl-6 col-lg-6 wow fadeInUp"
-            data-wow-delay="200ms"
-          >
-            <div className="why-choose-one__single glassy-1">
-              <div className="why-choose-one__icon">
-                <span className="icon-customer-service"></span>
+              <div
+                className="col-xl-6 col-lg-6 wow fadeInUp"
+                data-wow-delay="200ms"
+              >
+                <div className="why-choose-one__single glassy-1">
+                  <div className="why-choose-one__icon">
+                    <span className="icon-customer-service"></span>
+                  </div>
+                  <div className="why-choose-one__content">
+                    <h3 className="why-choose-one__title">خدمة ودودة وصادقة</h3>
+                    <p className="why-choose-one__text">
+                      عملاؤنا يثقون بنا لنصائحنا الواضحة، أسعارنا العادلة،
+                      ووعدنا بعدم تحصيل أي رسوم إذا لم نتمكن من العلاج.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="why-choose-one__content">
-                <h3 className="why-choose-one__title">خدمة ودودة وصادقة</h3>
-                <p className="why-choose-one__text">
-                  عملاؤنا يثقون بنا لنصائحنا الواضحة، أسعارنا العادلة، ووعدنا
-                  بعدم تحصيل أي رسوم إذا لم نتمكن من العلاج.
-                </p>
+              <div
+                className="col-xl-6 col-lg-6 wow fadeInUp"
+                data-wow-delay="300ms"
+              >
+                <div className="why-choose-one__single glassy-1">
+                  <div className="why-choose-one__icon">
+                    <span className="icon-security"></span>
+                  </div>
+                  <div className="why-choose-one__content">
+                    <h3 className="why-choose-one__title">
+                      سلامة المريض أولاً
+                    </h3>
+                    <p className="why-choose-one__text">
+                      سلامتُك وصحتُك في مقدمة أولوياتنا. نتعامل مع كل حالة كأنها
+                      حالتنا الخاصة.
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div
-            className="col-xl-6 col-lg-6 wow fadeInUp"
-            data-wow-delay="300ms"
-          >
-            <div className="why-choose-one__single glassy-1">
-              <div className="why-choose-one__icon">
-                <span className="icon-security"></span>
+              <div
+                className="col-xl-6 col-lg-6 wow fadeInUp"
+                data-wow-delay="400ms"
+              >
+                <div className="why-choose-one__single glassy-1">
+                  <div className="why-choose-one__icon">
+                    <span className="icon-computer-1"></span>
+                  </div>
+                  <div className="why-choose-one__content">
+                    <h3 className="why-choose-one__title">ضمان تعقيم كامل</h3>
+                    <p className="why-choose-one__text">
+                      من أدوات التعقيم وحتى بيئة العيادة، نضمن تعقيماً كاملاً
+                      لتجربة آمنة وصحية.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="why-choose-one__content">
-                <h3 className="why-choose-one__title">سلامة المريض أولاً</h3>
-                <p className="why-choose-one__text">
-                  سلامتُك وصحتُك في مقدمة أولوياتنا. نتعامل مع كل حالة كأنها
-                  حالتنا الخاصة.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div
-            className="col-xl-6 col-lg-6 wow fadeInUp"
-            data-wow-delay="400ms"
-          >
-            <div className="why-choose-one__single glassy-1">
-              <div className="why-choose-one__icon">
-                <span className="icon-computer-1"></span>
-              </div>
-              <div className="why-choose-one__content">
-                <h3 className="why-choose-one__title">ضمان تعقيم كامل</h3>
-                <p className="why-choose-one__text">
-                  من أدوات التعقيم وحتى بيئة العيادة، نضمن تعقيماً كاملاً لتجربة
-                  آمنة وصحية.
-                </p>
-              </div>
-            </div>
-          </div>
+            </>
+          )}
         </div>
         <div className="row">
           <div className="col-xl-12">

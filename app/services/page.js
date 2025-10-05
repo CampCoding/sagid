@@ -2,12 +2,15 @@
 import CounterUp from "@/components/elements/CounterUp";
 import Layout from "@/components/layout/Layout";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Link from "next/link";
 import Testimonials from "../../components/sharedSections/Testimonials";
 import WhyChoose from "../../components/sharedSections/WhyChoose";
 import Faq from "../../components/sharedSections/Faq";
+import axios from "axios";
+import { base_url } from "../../utils/base_url";
+import { toast } from "../../components/ui/Toast";
 
 const swiperOptions = {
   modules: [Autoplay, Pagination, Navigation],
@@ -18,24 +21,48 @@ const swiperOptions = {
     disableOnInteraction: false,
   },
   loop: true,
-
-  // Navigation
   navigation: {
     nextEl: ".srn",
     prevEl: ".srp",
   },
-
-  // Pagination
   pagination: {
     el: ".swiper-pagination",
     clickable: true,
   },
 };
-export default function Home() {
+
+export default function Services() {
   const [isActive, setIsActive] = useState({
     status: false,
     key: 1,
   });
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch services data
+  const getServicesData = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(
+        `${base_url}servicespage/select_services.php`
+      );
+
+      if (res.data.status === "success") {
+        setData(res.data);
+      } else {
+        toast.error("Something went wrong");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to load services data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getServicesData();
+  }, []);
 
   const handleToggle = (key) => {
     if (isActive.key === key) {
@@ -50,13 +77,37 @@ export default function Home() {
     }
   };
 
+  // Get data
+  const bannerData = data?.banner?.[0];
+  const services = data?.services?.filter((s) => s.selected === "yes") || [];
+  const testimonials = data?.testimonials || [];
+  const faqs = data?.faqs || [];
+  const statsData = data?.stats?.[0];
+  const whyUs = data?.why_us || [];
+
+  // Loading state
+  if (loading) {
+    return (
+      <Layout headerStyle={3} footerStyle={3}>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto"></div>
+            <p className="mt-4 text-gray-600">جاري التحميل...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <>
       <Layout
         headerStyle={3}
         footerStyle={3}
-        breadcrumbTitle="خدمات طب الأسنان"
-        caption="كل علاج هو فرصة لاستعادة ابتسامتك بأفضل حال"
+        breadcrumbTitle={bannerData?.title || "خدمات طب الأسنان"}
+        caption={
+          bannerData?.subtitle || "كل علاج هو فرصة لاستعادة ابتسامتك بأفضل حال"
+        }
       >
         {/*Services Two Start*/}
         <section className="services-two" dir="rtl">
@@ -72,73 +123,64 @@ export default function Home() {
               </p>
             </div>
             <div className="row">
-              {/* تنظيف الأسنان */}
-              <div
-                className="col-xl-4 col-lg-6 col-md-6 wow fadeInUp"
-                data-wow-delay="100ms"
-              >
-                <div className="services-two__single glassy-1 h-full">
-                  <div className="services-two__single-inner">
-                    <div className="services-two__icon">
-                      <span className="icon-phone"></span>
+              {services.length > 0 ? (
+                services.map((service, index) => {
+                  const delays = ["100ms", "200ms", "300ms", "400ms", "500ms"];
+                  const iconClasses = [
+                    "icon-phone",
+                    "icon-tap",
+                    "icon-laptop",
+                    "icon-computer",
+                    "icon-smartphone",
+                  ];
+                  const iconColorClasses = [
+                    "",
+                    "services-two__icon--two",
+                    "services-two__icon--three",
+                    "services-two__icon--four",
+                    "services-two__icon--five",
+                  ];
+
+                  return (
+                    <div
+                      key={service.id}
+                      className="col-xl-4 col-lg-6 col-md-6 wow fadeInUp"
+                      data-wow-delay={delays[index] || "100ms"}
+                    >
+                      <div className="services-two__single glassy-1 h-full">
+                        <div className="services-two__single-inner">
+                          <div
+                            className={`services-two__icon ${
+                              iconColorClasses[index] || ""
+                            }`}
+                          >
+                            <span
+                              className={iconClasses[index] || "icon-phone"}
+                            ></span>
+                          </div>
+                          <h3 className="services-two__title">
+                            <Link href={`/services-details/${service.id}`}>
+                              {service.title}
+                            </Link>
+                          </h3>
+                          <p className="services-two__text">
+                            {service.features?.split("**CAMP**")[0] || ""}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <h3 className="services-two__title">
-                      <Link href="/services-details/cleaning">
-                        تنظيف الأسنان
-                      </Link>
-                    </h3>
-                    <p className="services-two__text">
-                      إزالة الجير والبلاك وتنظيف شامل لصحة فموية أفضل.
-                    </p>
-                  </div>
+                  );
+                })
+              ) : (
+                <div className="col-12 text-center py-10">
+                  <p className="text-gray-500 text-xl">
+                    لا توجد خدمات متاحة حالياً
+                  </p>
                 </div>
-              </div>
-              {/* حشوات الأسنان */}
-              <div
-                className="col-xl-4 col-lg-6 col-md-6 wow fadeInUp"
-                data-wow-delay="200ms"
-              >
-                <div className="services-two__single glassy-1 h-full">
-                  <div className="services-two__single-inner">
-                    <div className="services-two__icon services-two__icon--two">
-                      <span className="icon-tap"></span>
-                    </div>
-                    <h3 className="services-two__title">
-                      <Link href="/services-details/filling">
-                        حشوات الأسنان
-                      </Link>
-                    </h3>
-                    <p className="services-two__text">
-                      علاج التسوس واستبدال الأجزاء المتضررة بمواد عالية الجودة.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              {/* علاج قناة الجذر */}
-              <div
-                className="col-xl-4 col-lg-6 col-md-6 wow fadeInUp"
-                data-wow-delay="300ms"
-              >
-                <div className="services-two__single glassy-1 h-full">
-                  <div className="services-two__single-inner">
-                    <div className="services-two__icon services-two__icon--three">
-                      <span className="icon-laptop"></span>
-                    </div>
-                    <h3 className="services-two__title">
-                      <Link href="/services-details/root-canal">
-                        علاج قناة الجذر
-                      </Link>
-                    </h3>
-                    <p className="services-two__text">
-                      علاج الألم والعدوى داخل جذور الأسنان لاستعادة صحتها.
-                    </p>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </section>
-
         {/*Services Two End*/}
 
         {/*Newsletter One Start*/}
@@ -176,11 +218,11 @@ export default function Home() {
         {/*Newsletter One End*/}
 
         {/*Testimonial One Start*/}
-        <Testimonials />
+        <Testimonials testimonials={testimonials} />
         {/*Testimonial One End*/}
 
         {/*FAQ One Start*/}
-        <Faq />
+        <Faq faqs={faqs} />
         {/*FAQ One End*/}
 
         {/*Counter One Start*/}
@@ -188,51 +230,75 @@ export default function Home() {
           <div
             className="counter-one__bg jarallax"
             style={{
-              backgroundImage:
-                "url(https://res.cloudinary.com/dkc5klynm/image/upload/v1752398182/1_czmbuo.png)",
+              backgroundImage: `url(${
+                statsData?.background_image ||
+                "https://res.cloudinary.com/dkc5klynm/image/upload/v1752398182/1_czmbuo.png"
+              })`,
             }}
           ></div>
           <div className="container">
             <div className="row">
               <div className="col-xl-12">
                 <ul className="counter-one__list list-unstyled">
-                  {/* سنوات الخبرة */}
-                  <li className="counter-one__single text-center">
-                    <CounterUp end={15} />
-                    <span className="counter-one__plus">+</span>
-                    <p className="counter-one__text">سنوات الخبرة</p>
-                  </li>
+                  {statsData?.stats && statsData.stats.length > 0 ? (
+                    statsData.stats
+                      .sort(
+                        (a, b) =>
+                          parseInt(a.display_order) - parseInt(b.display_order)
+                      )
+                      .map((stat) => {
+                        const formatSuffix = (suffix) => {
+                          if (!suffix || suffix.trim() === "") return "+";
+                          if (suffix.toUpperCase() === "K") return "k+";
+                          return suffix;
+                        };
 
-                  {/* المرضى السعداء */}
-                  <li className="counter-one__single text-center">
-                    <CounterUp end={2000} />
-                    <span className="counter-one__plus">+</span>
-                    <p className="counter-one__text">مريض سعيد</p>
-                  </li>
-
-                  {/* العلاجات المكتملة */}
-                  <li className="counter-one__single text-center">
-                    <CounterUp end={5000} />
-                    <span className="counter-one__plus">+</span>
-                    <p className="counter-one__text">علاج مكتمل</p>
-                  </li>
-
-                  {/* نسبة رضا المرضى */}
-                  <li className="counter-one__single text-center">
-                    <CounterUp end={99} />
-                    <span className="counter-one__plus">%</span>
-                    <p className="counter-one__text">رضا المرضى</p>
-                  </li>
+                        return (
+                          <li
+                            key={stat.id}
+                            className="counter-one__single text-center"
+                          >
+                            <CounterUp end={parseInt(stat.value)} />
+                            <span className="counter-one__plus">
+                              {formatSuffix(stat.suffix)}
+                            </span>
+                            <p className="counter-one__text">{stat.label}</p>
+                          </li>
+                        );
+                      })
+                  ) : (
+                    <>
+                      <li className="counter-one__single text-center">
+                        <CounterUp end={15} />
+                        <span className="counter-one__plus">+</span>
+                        <p className="counter-one__text">سنوات الخبرة</p>
+                      </li>
+                      <li className="counter-one__single text-center">
+                        <CounterUp end={2000} />
+                        <span className="counter-one__plus">+</span>
+                        <p className="counter-one__text">مريض سعيد</p>
+                      </li>
+                      <li className="counter-one__single text-center">
+                        <CounterUp end={5000} />
+                        <span className="counter-one__plus">+</span>
+                        <p className="counter-one__text">علاج مكتمل</p>
+                      </li>
+                      <li className="counter-one__single text-center">
+                        <CounterUp end={99} />
+                        <span className="counter-one__plus">%</span>
+                        <p className="counter-one__text">رضا المرضى</p>
+                      </li>
+                    </>
+                  )}
                 </ul>
               </div>
             </div>
           </div>
         </section>
-
         {/*Counter One End*/}
 
         {/*Why Choose One Start*/}
-        <WhyChoose />
+        <WhyChoose whyUs={whyUs} />
         {/*Why Choose One End*/}
       </Layout>
     </>

@@ -1,32 +1,40 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Counter from "./Counter";
 
 export default function CounterUp({ end }) {
   const [inViewport, setInViewport] = useState(false);
-
-  const handleScroll = () => {
-    const elements = document.getElementsByClassName("count-text");
-    if (elements.length > 0) {
-      const element = elements[0];
-      const rect = element.getBoundingClientRect();
-      const isInViewport = rect.top >= 0 && rect.bottom <= window.innerHeight;
-      if (isInViewport && !inViewport) {
-        setInViewport(true);
-      }
-    }
-  };
+  const counterRef = useRef(null);
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !inViewport) {
+            setInViewport(true);
+          }
+        });
+      },
+      {
+        threshold: 0.5, // Trigger when 50% of element is visible
+      }
+    );
+
+    if (counterRef.current) {
+      observer.observe(counterRef.current);
+    }
+
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      if (counterRef.current) {
+        observer.unobserve(counterRef.current);
+      }
     };
-  }, []);
+  }, [inViewport]);
+
   return (
     <>
-      <span className="count-text">
-        {inViewport && <Counter end={end} duration={20} />}
+      <span className="count-text" ref={counterRef}>
+        {inViewport ? <Counter end={end} duration={20} /> : 0}
       </span>
     </>
   );

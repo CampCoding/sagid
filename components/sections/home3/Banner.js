@@ -28,12 +28,13 @@ const swiperOptions = {
   },
 };
 
-export default function Banner() {
+export default function Banner({ banners }) {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
+
   // Smooth scale
   const rawScale = useTransform(scrollYProgress, [0, 0.5, 1], [1, 2, 4]);
   const scale = useSpring(rawScale, {
@@ -58,140 +59,104 @@ export default function Banner() {
     stiffness: 100,
     damping: 30,
   });
+
+  // Filter active banners and sort by display_order
+  const activeBanners = banners
+    ?.filter((banner) => banner.is_active === "1")
+    ?.sort((a, b) => parseInt(a.display_order) - parseInt(b.display_order));
+
   return (
     <>
       {/*Main Slider Start*/}
       <motion.section
         style={{ opacity }}
         ref={ref}
-        className="main-slider-two main-slider-three clearfix  !fixed top-[100px] inset-0 z-[1] h-screen overflow-hidden select-none"
+        className="main-slider-two main-slider-three clearfix !fixed top-[100px] inset-0 z-[1] h-screen overflow-hidden select-none"
       >
         <Swiper
           {...swiperOptions}
           className="swiper-container thm-swiper__slider"
         >
           <div className="swiper-wrapper">
-            <SwiperSlide>
-              <motion.div className="swiper-slide" style={{ scale }}>
-                <div
-                  className="image-layer-two"
-                  style={{
-                    backgroundImage:
-                      "url(https://res.cloudinary.com/dkc5klynm/image/upload/v1752331061/ozkan-guner-8K2vv2JMRBQ-unsplash_11zon_rxukim.jpg)",
-                  }}
-                ></div>
-                {/* /.image-layer */}
-                <motion.div style={{ opacity, x }} className="container">
-                  <div className="row">
-                    <div className="col-xl-12">
-                      <div className="main-slider-two__content">
-                        <p className="main-slider-two__sub-title">
-                          مرحبا بك في
-                        </p>
-                        <h2 className="main-slider-two__title">
-                          True Smile Dental Clinic <br />
-                        </h2>
-                        <p className="main-slider-two__text">
-                          بقيادة د. ساجد لؤي، بنقّدم لك رعایة متكاملة في مجال طب
-                          الأسنان، باستخدام أحدث التقنیات الطبیة، وبأعلى معاییر
-                          الجودة والراحة.
-                        </p>
-                        <div className="main-slider-two__btn-box">
-                          <Link
-                            href="/appointment"
-                            className="thm-btn main-slider-two__btn"
-                          >
-                            احجز موعدك الآن
-                          </Link>
+            {activeBanners && activeBanners.length > 0 ? (
+              activeBanners.map((banner) => (
+                <SwiperSlide key={banner.id}>
+                  <motion.div className="swiper-slide" style={{ scale }}>
+                    <div
+                      className="image-layer-two"
+                      style={{
+                        backgroundImage: `url(${banner.image})`,
+                      }}
+                    ></div>
+                    {/* /.image-layer */}
+                    <motion.div style={{ opacity, x }} className="container">
+                      <div className="row">
+                        <div className="col-xl-12">
+                          <div className="main-slider-two__content">
+                            <p className="main-slider-two__sub-title">
+                              {banner.title}
+                            </p>
+                            <h2 className="main-slider-two__title">
+                              {banner.subtitle}
+                            </h2>
+                            <p className="main-slider-two__text">
+                              {banner.description}
+                            </p>
+                            <div className="main-slider-two__btn-box">
+                              <Link
+                                href={"/appointment"}
+                                className="thm-btn main-slider-two__btn"
+                              >
+                                {banner.cta_text || "احجز موعدك الآن"}
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                </SwiperSlide>
+              ))
+            ) : (
+              // Fallback slide if no banners available
+              <SwiperSlide>
+                <motion.div className="swiper-slide" style={{ scale }}>
+                  <div
+                    className="image-layer-two"
+                    style={{
+                      backgroundImage:
+                        "url(https://res.cloudinary.com/dkc5klynm/image/upload/v1752331061/ozkan-guner-8K2vv2JMRBQ-unsplash_11zon_rxukim.jpg)",
+                    }}
+                  ></div>
+                  <motion.div style={{ opacity, x }} className="container">
+                    <div className="row">
+                      <div className="col-xl-12">
+                        <div className="main-slider-two__content">
+                          <p className="main-slider-two__sub-title">
+                            مرحبا بك في
+                          </p>
+                          <h2 className="main-slider-two__title">
+                            True Smile Dental Clinic
+                          </h2>
+                          <p className="main-slider-two__text">
+                            بقيادة د. ساجد لؤي، بنقّدم لك رعایة متكاملة في مجال
+                            طب الأسنان
+                          </p>
+                          <div className="main-slider-two__btn-box">
+                            <Link
+                              href="/appointment"
+                              className="thm-btn main-slider-two__btn"
+                            >
+                              احجز موعدك الآن
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 </motion.div>
-              </motion.div>
-            </SwiperSlide>
-            <SwiperSlide>
-              <motion.div className="swiper-slide" style={{ scale }}>
-                <div
-                  className="image-layer-two"
-                  style={{
-                    backgroundImage:
-                      "url(https://res.cloudinary.com/dkc5klynm/image/upload/v1752331477/ozkan-guner-R8MoN4FV5q0-unsplash_11zon_kuqa60.jpg)",
-                  }}
-                ></div>
-                {/* /.image-layer */}
-                <motion.div style={{ opacity, x }} className="container">
-                  <div className="row">
-                    <div className="col-xl-12">
-                      <div className="main-slider-two__content">
-                        <p className="main-slider-two__sub-title">
-                          عيادة أسنان احترافية
-                        </p>
-                        <h2 className="main-slider-two__title">
-                          خبراء في علاج وتجميل الأسنان
-                          <br />
-                          لابتسامة صحية وجميلة
-                        </h2>
-                        <p className="main-slider-two__text">
-                          سواء كان لديك ألم ضرس، تنظيف عميق، أو زراعة
-                          أسنان—فريقنا الطبي المعتمد
-                          <br />
-                          جاهز لتقديم أفضل رعاية بأسلوب سريع ودقيق.
-                        </p>
-                        <div className="main-slider-two__btn-box">
-                          <Link
-                            href="/appointment"
-                            className="thm-btn main-slider-two__btn"
-                          >
-                            احجز موعدك الآن
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              </motion.div>
-            </SwiperSlide>
-            {/* <SwiperSlide>
-              <motion.div className="swiper-slide" style={{ scale }}>
-                <div
-                  className="image-layer-two"
-                  style={{
-                    backgroundImage:
-                      "url(assets/images/mobilehub/blog-1-3.jpg)",
-                  }}
-                ></div>
-             
-                <motion.div style={{ opacity, x }} className="container">
-                  <div className="row">
-                    <div className="col-xl-12">
-                      <div className="main-slider-two__content">
-                        <p className="main-slider-two__sub-title">
-                          Pro Tech Repair
-                        </p>
-                        <h2 className="main-slider-two__title">
-                          Cracked Screen? Sluggish Laptop? <br /> We Bring Tech
-                          Back to Life!
-                        </h2>
-                        <p className="main-slider-two__text">
-                          From smartphones to gaming rigs, our expert hands
-                          handle it all. Fast fixes, real parts, no tech jargon
-                          — just your device working like new.
-                        </p>
-                        <div className="main-slider-two__btn-box">
-                          <Link
-                            href="/appointment"
-                            className="thm-btn main-slider-two__btn"
-                          >
-                            Repair My Device
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              </motion.div>
-            </SwiperSlide> */}
+              </SwiperSlide>
+            )}
           </div>
 
           <div className="swiper-pagination" id="main-slider-pagination"></div>

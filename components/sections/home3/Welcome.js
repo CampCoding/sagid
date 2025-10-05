@@ -3,8 +3,13 @@ import ModalVideo from "react-modal-video";
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-export default function Welcome() {
+
+export default function Welcome({ welcome }) {
   const [isOpen, setOpen] = useState(false);
+
+  // Get first welcome section
+  const welcomeData = welcome?.[0];
+
   return (
     <>
       {/*Welcome One Start*/}
@@ -12,8 +17,10 @@ export default function Welcome() {
         <div
           className="welcome-one__bg"
           style={{
-            backgroundImage:
-              "url(https://res.cloudinary.com/dkc5klynm/image/upload/v1752398655/4_wthzyt.png)",
+            backgroundImage: `url(${
+              welcomeData?.image_right ||
+              "https://res.cloudinary.com/dkc5klynm/image/upload/v1752398655/4_wthzyt.png"
+            })`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
@@ -24,35 +31,33 @@ export default function Welcome() {
               <div className="welcome-one__left p-4 md:p-6">
                 <div className="section-title text-right mb-4 md:mb-6">
                   <span className="section-title__tagline text-base md:text-lg">
-                    مرحبا بك
+                    {welcomeData?.section_title || "مرحبا بك"}
                   </span>
                   <h2 className="section-title__title text-xl md:text-2xl lg:text-3xl">
-                    True Smile Dental Clinic – خدمات طب الأسنان المتميزة
+                    {welcomeData?.title ||
+                      "True Smile Dental Clinic – خدمات طب الأسنان المتميزة"}
                   </h2>
                 </div>
                 <p className="welcome-one__text-1 text-sm md:text-base mb-3 md:mb-4">
-                  بقيادة د. ساجد لؤي، بنقّدم لك رعایة متكاملة في مجال طب
-                  الأسنان، باستخدام أحدث التقنیات الطبیة، وبأعلى معاییر الجودة
-                  والراحة.
+                  {welcomeData?.description ||
+                    "بقيادة د. ساجد لؤي، بنقّدم لك رعایة متكاملة في مجال طب الأسنان، باستخدام أحدث التقنیات الطبیة، وبأعلى معاییر الجودة والراحة."}
                 </p>
                 <p className="welcome-one__text-2 text-sm md:text-base mb-5 md:mb-6">
-                  نعالج جميع حالات الأسنان في نفس اليوم باستخدام مواد طبيّة
-                  أصلية
-                  <br className="hidden md:block" />
-                  وخبرة طبية ودعم ودود يمكنك الاعتماد عليه.
+                  {welcomeData?.small_description ||
+                    "نعالج جميع حالات الأسنان في نفس اليوم باستخدام مواد طبيّة أصلية وخبرة طبية ودعم ودود يمكنك الاعتماد عليه."}
                 </p>
                 <div className="welcome-one__btn-box flex flex-wrap gap-3 md:gap-4">
                   <Link
-                    href="contact"
+                    href={"contact"}
                     className="welcome-one__btn thm-btn text-sm md:text-base"
                   >
-                    تواصل معنا
+                    {welcomeData?.button2_text || "تواصل معنا"}
                   </Link>
                   <Link
-                    href="about"
+                    href={"about"}
                     className="welcome-one__btn-2 thm-btn text-sm md:text-base"
                   >
-                    اكتشف المزيد
+                    {welcomeData?.button1_text || "اكتشف المزيد"}
                   </Link>
                 </div>
               </div>
@@ -65,7 +70,10 @@ export default function Welcome() {
                   data-wow-duration="2500ms"
                 >
                   <img
-                    src="https://res.cloudinary.com/dkc5klynm/image/upload/v1752395024/vecteezy_ai-generated-dental-clinic-advertisment-background-with-copy_36594488_11zon_m3bybr.jpg"
+                    src={
+                      welcomeData?.image_left ||
+                      "https://res.cloudinary.com/dkc5klynm/image/upload/v1752395024/vecteezy_ai-generated-dental-clinic-advertisment-background-with-copy_36594488_11zon_m3bybr.jpg"
+                    }
                     alt="Dental clinic"
                     className="w-full h-auto rounded-lg shadow-lg"
                   />

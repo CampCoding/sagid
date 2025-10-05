@@ -1,14 +1,24 @@
+// components/sharedSections/Testimonials.jsx
 "use client";
+import Link from "next/link";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import CustomTilt from "./../ui/CustomTilt";
 
 const swiperOptions = {
   modules: [Autoplay, Pagination, Navigation],
-  slidesPerView: 1,
+  slidesPerView: 3,
   spaceBetween: 30,
-  autoplay: {
-    delay: 3000,
-    disableOnInteraction: false,
+  breakpoints: {
+    0: {
+      slidesPerView: 1,
+    },
+    768: {
+      slidesPerView: 2,
+    },
+    1024: {
+      slidesPerView: 3,
+    },
   },
   loop: true,
   navigation: {
@@ -21,116 +31,102 @@ const swiperOptions = {
   },
 };
 
-const Testimonials = () => {
+export default function Testimonials({ testimonials }) {
+  // Render stars based on rating
+  const renderStars = (rating) => {
+    const stars = [];
+    const ratingNum = parseInt(rating) || 5;
+    for (let i = 0; i < ratingNum; i++) {
+      stars.push(<span key={i}>⭐</span>);
+    }
+    return stars;
+  };
+
   return (
-    <section className="testimonial-one bg-transparent">
+    <section className="testimonal-two">
       <div className="container">
-        <div className="row">
-          <div className="col-xl-12">
-            <div className="section-title text-right">
-              <span className="section-title__tagline">
-                آراء مرضانا السعداء
-              </span>
-              <h2 className="section-title__title">تجارب المرضى</h2>
-            </div>
-
-            <Swiper {...swiperOptions} className="testimonial-one__carousel">
-              {/* Testimonial 1 */}
-              <SwiperSlide>
-                <div className="item glassy">
-                  <div className="testimonial-one__single">
-                    <div className="testimonial-one__client-img-box">
-                      <div className="testimonial-one__client-img">
-                        <img
-                          src="assets/images/mobilehub/testimonial-1-1.jpg"
-                          alt="صورة المريض كريم سمير"
-                        />
-                      </div>
-                    </div>
-                    <div className="testimonial-one__client-info-box">
-                      <div className="testimonial-one__quote">
-                        <span className="icon-quote"></span>
-                      </div>
-                      <p className="testimonial-one__text">
-                        "كان عندي تسوس عميق والـ root canal كان ممكن يكون مرهق،
-                        لكن الجلسة سريعة ومريحة. ملم بكل حاجة وحسيت إنه أمانة في
-                        شغله."
-                      </p>
-                      <div className="testimonial-one__client-info">
-                        <h3>كريم سمير</h3>
-                        <p>مريض علاج جذور الأسنان</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </SwiperSlide>
-              {/* Testimonial 2 */}
-              <SwiperSlide>
-                <div className="item glassy">
-                  <div className="testimonial-one__single">
-                    <div className="testimonial-one__client-img-box">
-                      <div className="testimonial-one__client-img">
-                        <img
-                          src="assets/images/mobilehub/testimonial-1-1.jpg"
-                          alt="صورة المريض كريم سمير"
-                        />
-                      </div>
-                    </div>
-                    <div className="testimonial-one__client-info-box">
-                      <div className="testimonial-one__quote">
-                        <span className="icon-quote"></span>
-                      </div>
-                      <p className="testimonial-one__text">
-                        "كان عندي تسوس عميق والـ root canal كان ممكن يكون مرهق،
-                        لكن الجلسة سريعة ومريحة. ملم بكل حاجة وحسيت إنه أمانة في
-                        شغله."
-                      </p>
-                      <div className="testimonial-one__client-info">
-                        <h3>كريم سمير</h3>
-                        <p>مريض علاج جذور الأسنان</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </SwiperSlide>
-              {/* Testimonial 3 */}
-              <SwiperSlide>
-                <div className="item glassy">
-                  <div className="testimonial-one__single">
-                    <div className="testimonial-one__client-img-box">
-                      <div className="testimonial-one__client-img">
-                        <img
-                          src="assets/images/mobilehub/testimonial-1-1.jpg"
-                          alt="صورة المريض كريم سمير"
-                        />
-                      </div>
-                    </div>
-                    <div className="testimonial-one__client-info-box">
-                      <div className="testimonial-one__quote">
-                        <span className="icon-quote"></span>
-                      </div>
-                      <p className="testimonial-one__text">
-                        "كان عندي تسوس عميق والـ root canal كان ممكن يكون مرهق،
-                        لكن الجلسة سريعة ومريحة. ملم بكل حاجة وحسيت إنه أمانة في
-                        شغله."
-                      </p>
-                      <div className="testimonial-one__client-info">
-                        <h3>كريم سمير</h3>
-                        <p>مريض علاج جذور الأسنان</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </SwiperSlide>
-
-              {/* pagination bullets */}
-              <div className="swiper-pagination"></div>
-            </Swiper>
-          </div>
+        <div className="section-title section-title--two text-center">
+          <span className="section-title__tagline">آراء المرضى</span>
+          <h2 className="section-title__title">تقييم عملائنا</h2>
+          <p className="section-title__text">
+            ما يقوله مرضانا عن True Smile Dental Clinic
+          </p>
         </div>
+        <Swiper
+          {...swiperOptions}
+          className="testimonial-two__carousel owl-carousel owl-theme thm-owl__carousel"
+        >
+          {testimonials && testimonials.length > 0 ? (
+            testimonials.map((testimonial) => (
+              <SwiperSlide key={testimonial.id}>
+                <div className="item">
+                  <CustomTilt>
+                    <div className="testimonial-two__sinlge glassy-1 !shadow-none">
+                      <div className="testimonial-two__sinlge-inner">
+                        <div className="testimonial-two__quote">
+                          <span className="icon-quote"></span>
+                        </div>
+                        <p className="testimonial-two__text line-clamp-4">
+                          {testimonial.text}
+                        </p>
+                        <div className="testimonial-two__info">
+                          <div className="testimonial-two__client-img">
+                            <img
+                              src={testimonial.image}
+                              alt={testimonial.name}
+                            />
+                          </div>
+                          <div className="testimonial-two__content">
+                            <h3 className="testimonial-two__client-name">
+                              {testimonial.name}
+                            </h3>
+                            <p className="testimonial-two__client-title">
+                              {renderStars(testimonial.rating)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CustomTilt>
+                </div>
+              </SwiperSlide>
+            ))
+          ) : (
+            <SwiperSlide>
+              <div className="item">
+                <CustomTilt>
+                  <div className="testimonial-two__sinlge glassy-1 !shadow-none">
+                    <div className="testimonial-two__sinlge-inner">
+                      <div className="testimonial-two__quote">
+                        <span className="icon-quote"></span>
+                      </div>
+                      <p className="testimonial-two__text line-clamp-4">
+                        "تجربة رائعة مع True Smile Dental Clinic"
+                      </p>
+                      <div className="testimonial-two__info">
+                        <div className="testimonial-two__client-img">
+                          <img
+                            src="assets/images/mobilehub/testimonial-2-1.jpg"
+                            alt="عميل"
+                          />
+                        </div>
+                        <div className="testimonial-two__content">
+                          <h3 className="testimonial-two__client-name">
+                            عميل سعيد
+                          </h3>
+                          <p className="testimonial-two__client-title">
+                            ⭐⭐⭐⭐⭐
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CustomTilt>
+              </div>
+            </SwiperSlide>
+          )}
+        </Swiper>
       </div>
     </section>
   );
-};
-
-export default Testimonials;
+}

@@ -38,7 +38,17 @@ const swiperOptions = {
   },
 };
 
-export default function Testimonial() {
+export default function Testimonial({ testimonials }) {
+  // Render stars based on rating
+  const renderStars = (rating) => {
+    const stars = [];
+    const ratingNum = parseInt(rating) || 5;
+    for (let i = 0; i < ratingNum; i++) {
+      stars.push(<span key={i}>⭐</span>);
+    }
+    return stars;
+  };
+
   return (
     <>
       {/*Testimonial two Start*/}
@@ -55,109 +65,147 @@ export default function Testimonial() {
             {...swiperOptions}
             className="testimonial-two__carousel owl-carousel owl-theme thm-owl__carousel"
           >
-            {/*Testimonial one Single Start*/}
-            <SwiperSlide>
-              <div className="item">
-                <CustomTilt>
-                  <div className="testimonial-two__sinlge glassy-1 !shadow-none">
-                    <div className="testimonial-two__sinlge-inner">
-                      <div className="testimonial-two__quote">
-                        <span className="icon-quote"></span>
-                      </div>
-                      <p className="testimonial-two__text line-clamp-4">
-                        “في حفلة عيد ميلاد، شعرت بألم حاد في ضرس العقل. فريق
-                        True Smile عالجني في نفس اليوم”
-                      </p>
-                      <div className="testimonial-two__info">
-                        <div className="testimonial-two__client-img">
-                          <img
-                            src="assets/images/mobilehub/testimonial-2-1.jpg"
-                            alt="أحمد إبراهيم"
-                          />
-                        </div>
-                        <div className="testimonial-two__content">
-                          <h3 className="testimonial-two__client-name">
-                            أحمد إبراهيم
-                          </h3>
-                          <p className="testimonial-two__client-title">
-                            موظف شركة
+            {testimonials && testimonials.length > 0 ? (
+              testimonials.map((testimonial) => (
+                <SwiperSlide key={testimonial.id}>
+                  <div className="item">
+                    <CustomTilt>
+                      <div className="testimonial-two__sinlge glassy-1 !shadow-none">
+                        <div className="testimonial-two__sinlge-inner">
+                          <div className="testimonial-two__quote">
+                            <span className="icon-quote"></span>
+                          </div>
+                          <p className="testimonial-two__text line-clamp-4">
+                            {testimonial.text}
                           </p>
+                          <div className="testimonial-two__info">
+                            <div className="testimonial-two__client-img">
+                              <img
+                                src={testimonial.image}
+                                alt={testimonial.name}
+                              />
+                            </div>
+                            <div className="testimonial-two__content">
+                              <h3 className="testimonial-two__client-name">
+                                {testimonial.name}
+                              </h3>
+                              <p className="testimonial-two__client-title">
+                                {renderStars(testimonial.rating)}
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </CustomTilt>
                   </div>
-                </CustomTilt>
-              </div>
-            </SwiperSlide>
-            {/*Testimonial one Single End*/}
-            {/*Testimonial two Single Start*/}
-            <SwiperSlide>
-              <div className="item">
-                <CustomTilt>
-                  <div className="testimonial-two__sinlge glassy-1 !shadow-none">
-                    <div className="testimonial-two__sinlge-inner">
-                      <div className="testimonial-two__quote">
-                        <span className="icon-quote"></span>
-                      </div>
-                      <p className="testimonial-two__text line-clamp-4">
-                        “تعرضت للتسوس الشديد وخشيت أن أفقد أحد أسناني. بفضل
-                        رعاية True Smile Dental Clinic، استعدت ابتسامتي بثقة.”
-                      </p>
-                      <div className="testimonial-two__info">
-                        <div className="testimonial-two__client-img">
-                          <img
-                            src="assets/images/mobilehub/testimonial-2-2.jpg"
-                            alt="ليلى محمد"
-                          />
-                        </div>
-                        <div className="testimonial-two__content">
-                          <h3 className="testimonial-two__client-name">
-                            ليلى محمد
-                          </h3>
-                          <p className="testimonial-two__client-title">
-                            طالبة جامعية
+                </SwiperSlide>
+              ))
+            ) : (
+              // Fallback testimonials
+              <>
+                <SwiperSlide>
+                  <div className="item">
+                    <CustomTilt>
+                      <div className="testimonial-two__sinlge glassy-1 !shadow-none">
+                        <div className="testimonial-two__sinlge-inner">
+                          <div className="testimonial-two__quote">
+                            <span className="icon-quote"></span>
+                          </div>
+                          <p className="testimonial-two__text line-clamp-4">
+                            "في حفلة عيد ميلاد، شعرت بألم حاد في ضرس العقل. فريق
+                            True Smile عالجني في نفس اليوم"
                           </p>
+                          <div className="testimonial-two__info">
+                            <div className="testimonial-two__client-img">
+                              <img
+                                src="assets/images/mobilehub/testimonial-2-1.jpg"
+                                alt="أحمد إبراهيم"
+                              />
+                            </div>
+                            <div className="testimonial-two__content">
+                              <h3 className="testimonial-two__client-name">
+                                أحمد إبراهيم
+                              </h3>
+                              <p className="testimonial-two__client-title">
+                                موظف شركة
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </CustomTilt>
                   </div>
-                </CustomTilt>
-              </div>
-            </SwiperSlide>
-            {/*Testimonial two Single End*/}
-            {/*Testimonial three Single Start*/}
-            <SwiperSlide>
-              <div className="item">
-                <CustomTilt>
-                  <div className="testimonial-two__sinlge glassy-1 !shadow-none">
-                    <div className="testimonial-two__sinlge-inner">
-                      <div className="testimonial-two__quote">
-                        <span className="icon-quote"></span>
-                      </div>
-                      <p className="testimonial-two__text line-clamp-4">
-                        “كنت أعاني من حساسية الأسنان وآلام اللثة المستمرة. بفضل
-                        العلاجات المتقدمة في True Smile، تحسنت حالتي تماماً!”
-                      </p>
-                      <div className="testimonial-two__info">
-                        <div className="testimonial-two__client-img">
-                          <img
-                            src="assets/images/mobilehub/testimonial-2-2.jpg"
-                            alt="سارة حسن"
-                          />
+                </SwiperSlide>
+                <SwiperSlide>
+                  <div className="item">
+                    <CustomTilt>
+                      <div className="testimonial-two__sinlge glassy-1 !shadow-none">
+                        <div className="testimonial-two__sinlge-inner">
+                          <div className="testimonial-two__quote">
+                            <span className="icon-quote"></span>
+                          </div>
+                          <p className="testimonial-two__text line-clamp-4">
+                            "تعرضت للتسوس الشديد وخشيت أن أفقد أحد أسناني. بفضل
+                            رعاية True Smile Dental Clinic، استعدت ابتسامتي
+                            بثقة."
+                          </p>
+                          <div className="testimonial-two__info">
+                            <div className="testimonial-two__client-img">
+                              <img
+                                src="assets/images/mobilehub/testimonial-2-2.jpg"
+                                alt="ليلى محمد"
+                              />
+                            </div>
+                            <div className="testimonial-two__content">
+                              <h3 className="testimonial-two__client-name">
+                                ليلى محمد
+                              </h3>
+                              <p className="testimonial-two__client-title">
+                                طالبة جامعية
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                        <div className="testimonial-two__content">
-                          <h3 className="testimonial-two__client-name">
-                            سارة حسن
-                          </h3>
-                          <p className="testimonial-two__client-title">ممرضة</p>
-                        </div>
                       </div>
-                    </div>
+                    </CustomTilt>
                   </div>
-                </CustomTilt>
-              </div>
-            </SwiperSlide>
-            {/*Testimonial three Single End*/}
+                </SwiperSlide>
+                <SwiperSlide>
+                  <div className="item">
+                    <CustomTilt>
+                      <div className="testimonial-two__sinlge glassy-1 !shadow-none">
+                        <div className="testimonial-two__sinlge-inner">
+                          <div className="testimonial-two__quote">
+                            <span className="icon-quote"></span>
+                          </div>
+                          <p className="testimonial-two__text line-clamp-4">
+                            "كنت أعاني من حساسية الأسنان وآلام اللثة المستمرة.
+                            بفضل العلاجات المتقدمة في True Smile، تحسنت حالتي
+                            تماماً!"
+                          </p>
+                          <div className="testimonial-two__info">
+                            <div className="testimonial-two__client-img">
+                              <img
+                                src="assets/images/mobilehub/testimonial-2-2.jpg"
+                                alt="سارة حسن"
+                              />
+                            </div>
+                            <div className="testimonial-two__content">
+                              <h3 className="testimonial-two__client-name">
+                                سارة حسن
+                              </h3>
+                              <p className="testimonial-two__client-title">
+                                ممرضة
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CustomTilt>
+                  </div>
+                </SwiperSlide>
+              </>
+            )}
           </Swiper>
         </div>
       </section>

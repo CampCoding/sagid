@@ -3,19 +3,22 @@ import CounterUp from "@/components/elements/CounterUp";
 import Layout from "@/components/layout/Layout";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import ReactCurvedText from "react-curved-text";
 import ModalVideo from "react-modal-video";
 import CustomTilt from "@/components/ui/CustomTilt";
 import Skills_Expertise from "../../components/sharedSections/Skills_Expertise";
+import { base_url } from "../../utils/base_url";
+import axios from "axios";
+import { toast } from "../../components/ui/Toast";
 
 const swiperOptions = {
   modules: [Autoplay, Pagination, Navigation],
   slidesPerView: 1,
   spaceBetween: 30,
   autoplay: {
-    delay: 1000,
+    delay: 3000,
     disableOnInteraction: false,
   },
   loop: true,
@@ -33,14 +36,104 @@ const swiperOptions = {
   },
 };
 
-export default function About() {
+export default function About({}) {
   const [isOpen, setOpen] = useState(false);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showAllDoctors, setShowAllDoctors] = useState(false);
+
+  const getAboutData = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`${base_url}aboutpage/select_about.php`);
+
+      if (res.data.status == "success") {
+        // ✅ Store full response data
+        setData(res.data);
+      } else {
+        toast.error("Something went wrong");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to load data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getAboutData();
+  }, []);
+
+  // Helper function to find section by type
+  const findSection = (type) => {
+    // ✅ Fixed: Now correctly accessing data.about
+    return data?.about?.find((section) => section.section_type === type);
+  };
+
+  // Get all sections
+  const bannerSection = findSection("banner");
+  const whoWeAreSection = findSection("who_we_are");
+  const visionSection = findSection("vision");
+  const missionSection = findSection("mission");
+  const ourServicesSection = findSection("our_services");
+  const aboutUsSection = findSection("about_us");
+  const contactUsSection = findSection("contact_us");
+  const ourExperienceSection = findSection("our_experience");
+
+  // Parse helper function
+  const parseByCAMP = (str) => {
+    return str ? str.split("**CAMP**").filter(Boolean) : [];
+  };
+
+  const aboutUsFeatures = parseByCAMP(aboutUsSection?.features);
+  const aboutUsImages = parseByCAMP(aboutUsSection?.images);
+  const experienceServices = parseByCAMP(ourExperienceSection?.services);
+
+  // ✅ Get testimonials and doctors from API
+  const testimonials = data?.testimonials || [];
+  const allDoctors = data?.doctors || [];
+
+  const displayedDoctors = showAllDoctors ? allDoctors : allDoctors.slice(0, 3);
+
+  const teamSectionRef = useRef(null);
+
+  const handleToggle = () => {
+    if (showAllDoctors) {
+      teamSectionRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+
+      setTimeout(() => {
+        setShowAllDoctors(false);
+      }, 300);
+    } else {
+      // If showing less, just expand
+      setShowAllDoctors(true);
+    }
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <Layout headerStyle={3} footerStyle={3}>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto"></div>
+            <p className="mt-4 text-gray-600">جاري التحميل...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout
       headerStyle={3}
       footerStyle={3}
-      breadcrumbTitle="True Smile Dental Clinic"
-      caption="خدمات طب الأسنان المتميزة "
+      breadcrumbTitle={bannerSection?.title || "True Smile Dental Clinic"}
+      caption={bannerSection?.description || "خدمات طب الأسنان المتميزة"}
     >
       {/*About Two Start*/}
       <section className="about-two about-page bg-transparent">
@@ -48,7 +141,7 @@ export default function About() {
           <div className="row">
             <div className="col-xl-5 col-lg-6">
               <div className="about-two__left">
-                <div className="about-two__main-progress-box glassy">
+                <div className="about-two__main-progress-box glassy !mb-2 md:!mb-0">
                   <div className="about-two__progress-single">
                     <div className="about-two__progress-box">
                       <div
@@ -56,7 +149,6 @@ export default function About() {
                         data-options='{ "value": 0.99,"thickness": 10,"emptyFill": "#f1f1f1","lineCap": "square", "size": 110, "fill": { "color": "#cf1f1f" } }'
                         style={{ width: "99%" }}
                       ></div>
-                      {/* /.circle-progress */}
                       <div className="about-two__pack">
                         <p>99%</p>
                       </div>
@@ -72,7 +164,6 @@ export default function About() {
                         data-options='{ "value": 0.9,"thickness": 10,"emptyFill": "#f1f1f1","lineCap": "square", "size": 110, "fill": { "color": "#cf1f1f" } }'
                         style={{ width: "95%" }}
                       ></div>
-                      {/* /.circle-progress */}
                       <div className="about-two__pack">
                         <p>95%</p>
                       </div>
@@ -84,28 +175,26 @@ export default function About() {
                 </div>
                 <div className="about-two__img-box">
                   <CustomTilt>
-                    <div className="about-two__img glassy ">
+                    <div className="about-two__img glassy relative z-[1000] ">
                       <img
                         className="w-full h-full max-w-[200px] object-cover max-h-[300px] mx-auto"
-                        src="https://res.cloudinary.com/dkc5klynm/image/upload/v1752395619/ozkan-guner-0gI0IXURDgo-unsplash_11zon_cadcwp.jpg"
-                        alt=""
+                        src={
+                          aboutUsImages[0] ||
+                          "https://res.cloudinary.com/dkc5klynm/image/upload/v1752395619/ozkan-guner-0gI0IXURDgo-unsplash_11zon_cadcwp.jpg"
+                        }
+                        alt="True Smile Dental Clinic"
                       />
                     </div>
                   </CustomTilt>
                   <div className="about-two__img-two glassy">
                     <img
                       className="max-w-[200px] object-cover"
-                      src="https://res.cloudinary.com/dkc5klynm/image/upload/v1752395483/ozkan-guner-KRJwZrjuKpE-unsplash_11zon_mobcoo.jpg"
-                      alt=""
+                      src={
+                        aboutUsImages[1] ||
+                        "https://res.cloudinary.com/dkc5klynm/image/upload/v1752395483/ozkan-guner-KRJwZrjuKpE-unsplash_11zon_mobcoo.jpg"
+                      }
+                      alt="True Smile Dental Clinic"
                     />
-                    {/* <div className="about-two__video-link">
-                      <a onClick={() => setOpen(true)} className="video-popup">
-                        <div className="about-two__video-icon">
-                          <span className="fa fa-play"></span>
-                          <i className="ripple"></i>
-                        </div>
-                      </a>
-                    </div> */}
                   </div>
                 </div>
                 <div className="about-two__shape-1 shapeMover">
@@ -132,48 +221,67 @@ export default function About() {
                     هنا تبدأ واثقة لابتسامتك
                   </span>
                   <h2 className="section-title__title">
-                    ابتسامتك المثالية تبدأ معنا – رعاية أسنان متكاملة بأحدث
-                    التقنيات
+                    {aboutUsSection?.title ||
+                      "ابتسامتك المثالية تبدأ معنا – رعاية أسنان متكاملة بأحدث التقنيات"}
                   </h2>
                 </div>
                 <p className="about-two__text-1">
-                  تحت قيادة د. لؤي ساجد، تقدّم عيادة True Smile رعاية أسنان
-                  متكاملة بمعايير طبية عالية وتقنيات رقمية متطورة، في بيئة مريحة
-                  وآمنة لراحتك ورضاك.
+                  {aboutUsSection?.description ||
+                    "تحت قيادة د. لؤي ساجد، تقدّم عيادة True Smile رعاية أسنان متكاملة بمعايير طبية عالية وتقنيات رقمية متطورة."}
                 </p>
                 <ul className="list-unstyled about-two__points">
-                  <li>
-                    <div className="icon">
-                      <span className="icon-award"></span>
-                    </div>
-                    <div className="text">
-                      <p>أحدث الأجهزة والتقنيات العالمية للتشخيص والعلاج</p>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="icon">
-                      <span className="icon-community"></span>
-                    </div>
-                    <div className="text">
-                      <p>خبرة وكفاءة عالية في التعامل مع جميع الحالات</p>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="icon">
-                      <span className="icon-warranty"></span>
-                    </div>
-                    <div className="text">
-                      <p>خصوصية وراحة نفسية تامة لكل مريض</p>
-                    </div>
-                  </li>
+                  {aboutUsFeatures.length > 0 ? (
+                    aboutUsFeatures.map((feature, index) => {
+                      const icons = [
+                        "icon-award",
+                        "icon-community",
+                        "icon-warranty",
+                      ];
+                      return (
+                        <li key={index}>
+                          <div className="icon">
+                            <span
+                              className={icons[index] || "icon-award"}
+                            ></span>
+                          </div>
+                          <div className="text">
+                            <p>{feature}</p>
+                          </div>
+                        </li>
+                      );
+                    })
+                  ) : (
+                    <>
+                      <li>
+                        <div className="icon">
+                          <span className="icon-award"></span>
+                        </div>
+                        <div className="text">
+                          <p>أحدث الأجهزة والتقنيات العالمية للتشخيص والعلاج</p>
+                        </div>
+                      </li>
+                      <li>
+                        <div className="icon">
+                          <span className="icon-community"></span>
+                        </div>
+                        <div className="text">
+                          <p>خبرة وكفاءة عالية في التعامل مع جميع الحالات</p>
+                        </div>
+                      </li>
+                      <li>
+                        <div className="icon">
+                          <span className="icon-warranty"></span>
+                        </div>
+                        <div className="text">
+                          <p>خصوصية وراحة نفسية تامة لكل مريض</p>
+                        </div>
+                      </li>
+                    </>
+                  )}
                 </ul>
                 <p className="about-two__text-2">
-                  خدماتنا تشمل: الفحص والتنظيف الوقائي، حشوات تجميلية بلون
-                  الأسنان، علاج جذور الأسنان (القنوات الجذرية)، جراحات الفم،
-                  زراعة الأسنان وزراعة العظم (Bone Grafting)، رفع الجيوب الأنفية
-                  (Sinus Lift)، التركيبات التجميلية (تيجان، جسور وزركون)، تصميم
-                  الابتسامة الرقمي (Digital Smile Design)، تقويم الأسنان، تبييض
-                  الأسنان، وطب أسنان الأطفال.
+                  {aboutUsSection?.sub_description ||
+                    "خدماتنا تشمل: الفحص والتنظيف الوقائي، حشوات تجميلية..."}
                 </p>
                 <Link href="/contact" className="thm-btn">
                   تواصل معنا
@@ -183,13 +291,13 @@ export default function About() {
           </div>
         </div>
       </section>
-
       {/*About Two End*/}
+
       <ModalVideo
         channel="youtube"
         autoplay
         isOpen={isOpen}
-        videoId="vfhzo499OeA"
+        videoId={aboutUsSection?.videos || "vfhzo499OeA"}
         onClose={() => setOpen(false)}
       />
 
@@ -206,77 +314,103 @@ export default function About() {
           <div className="section-title text-center">
             <span className="section-title__tagline">خبرتنا</span>
             <h2 className="section-title__title">
-              لدينا أكثر من 20 عاماً من الخبرة في
-              <br />
-              خدمات طب الأسنان الشاملة
+              {ourExperienceSection?.title ||
+                "لدينا أكثر من 20 عاماً من الخبرة في خدمات طب الأسنان الشاملة"}
             </h2>
           </div>
 
           <div className="row items-center">
-            {/* Experience One Single Start */}
-            <div
-              className="col-xl-4 col-lg-4 wow h-full fadeInLeft"
-              data-wow-delay="100ms"
-            >
-              <div className="experience-one__single h-full">
-                <div className="experience-one__icon">
-                  <span className="icon-service"></span>
-                </div>
-                <div className="experience-one__content">
-                  <h3 className="experience-one__title">
-                    <Link href="services-details">خدمات عالية الجودة</Link>
-                  </h3>
-                  <p className="experience-one__text">
-                    فحص وقائي، تنظيف، حشوات تجميلية، وعلاج جذور الأسنان بأحدث
-                    التقنيات.
-                  </p>
-                </div>
-              </div>
-            </div>
-            {/* Experience One Single End */}
+            {experienceServices.length > 0 ? (
+              experienceServices.map((service, index) => {
+                const [title, description] = service.split("**");
+                const delays = ["100ms", "200ms", "300ms"];
+                const animations = ["fadeInLeft", "fadeInUp", "fadeInRight"];
+                const icons = [
+                  "icon-service",
+                  "icon-management",
+                  "icon-headphones",
+                ];
 
-            {/* Experience One Single Start */}
-            <div
-              className="col-xl-4 col-lg-4 wow h-full fadeInUp"
-              data-wow-delay="200ms"
-            >
-              <div className="experience-one__single h-full">
-                <div className="experience-one__icon">
-                  <span className="icon-management"></span>
+                return (
+                  <div
+                    key={index}
+                    className={`col-xl-4 col-lg-4 wow h-full ${animations[index]}`}
+                    data-wow-delay={delays[index]}
+                  >
+                    <div className="experience-one__single h-full">
+                      <div className="experience-one__icon">
+                        <span className={icons[index]}></span>
+                      </div>
+                      <div className="experience-one__content">
+                        <h3 className="experience-one__title">
+                          <Link href="services-details">{title}</Link>
+                        </h3>
+                        <p className="experience-one__text">{description}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <>
+                <div
+                  className="col-xl-4 col-lg-4 wow h-full fadeInLeft"
+                  data-wow-delay="100ms"
+                >
+                  <div className="experience-one__single h-full">
+                    <div className="experience-one__icon">
+                      <span className="icon-service"></span>
+                    </div>
+                    <div className="experience-one__content">
+                      <h3 className="experience-one__title">
+                        <Link href="services-details">خدمات عالية الجودة</Link>
+                      </h3>
+                      <p className="experience-one__text">
+                        فحص وقائي، تنظيف، حشوات تجميلية، وعلاج جذور الأسنان
+                        بأحدث التقنيات.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="experience-one__content">
-                  <h3 className="experience-one__title">
-                    <Link href="team">فريق متخصص</Link>
-                  </h3>
-                  <p className="experience-one__text">
-                    طاقم من أطباء أسنان وأخصائيين ذوي خبرة يقدمون رعاية شخصية
-                    لكل مريض.
-                  </p>
+                <div
+                  className="col-xl-4 col-lg-4 wow h-full fadeInUp"
+                  data-wow-delay="200ms"
+                >
+                  <div className="experience-one__single h-full">
+                    <div className="experience-one__icon">
+                      <span className="icon-management"></span>
+                    </div>
+                    <div className="experience-one__content">
+                      <h3 className="experience-one__title">
+                        <Link href="team">فريق متخصص</Link>
+                      </h3>
+                      <p className="experience-one__text">
+                        طاقم من أطباء أسنان وأخصائيين ذوي خبرة يقدمون رعاية
+                        شخصية لكل مريض.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            {/* Experience One Single End */}
-
-            {/* Experience One Single Start */}
-            <div
-              className="col-xl-4 col-lg-4 wow h-full fadeInRight"
-              data-wow-delay="300ms"
-            >
-              <div className="experience-one__single h-full">
-                <div className="experience-one__icon">
-                  <span className="icon-headphones"></span>
+                <div
+                  className="col-xl-4 col-lg-4 wow h-full fadeInRight"
+                  data-wow-delay="300ms"
+                >
+                  <div className="experience-one__single h-full">
+                    <div className="experience-one__icon">
+                      <span className="icon-headphones"></span>
+                    </div>
+                    <div className="experience-one__content">
+                      <h3 className="experience-one__title">
+                        <Link href="contact">سرعة في الإنجاز والدعم</Link>
+                      </h3>
+                      <p className="experience-one__text">
+                        خدمات طوارئ دون حجز مسبق، وضمان "لا علاج، لا رسوم".
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="experience-one__content">
-                  <h3 className="experience-one__title">
-                    <Link href="contact">سرعة في الإنجاز والدعم</Link>
-                  </h3>
-                  <p className="experience-one__text">
-                    خدمات طوارئ دون حجز مسبق، وضمان “لا علاج، لا رسوم”.
-                  </p>
-                </div>
-              </div>
-            </div>
-            {/* Experience One Single End */}
+              </>
+            )}
           </div>
 
           <div className="row">
@@ -307,11 +441,10 @@ export default function About() {
           </div>
         </div>
       </section>
-
       {/*Experience One End*/}
 
       {/*Skill One Start*/}
-      <Skills_Expertise />
+      <Skills_Expertise highlights={data?.highlights || []} />
       {/*Skill One End*/}
 
       {/*Company Details Start*/}
@@ -329,12 +462,11 @@ export default function About() {
                     <span className="icon-management"></span>
                   </div>
                   <h3 className="company-details__title">
-                    <div>من نحن</div>
+                    <div>{whoWeAreSection?.title || "من نحن"}</div>
                   </h3>
                   <p className="company-details__text">
-                    تقدّم عيادة True Smile Dental Clinic، بقيادة د. لؤي ساجد،
-                    رعاية أسنان متكاملة بأعلى المعايير الطبية والتقنيات الرقمية،
-                    في بيئة مريحة وآمنة لراحتك ورضاك.
+                    {whoWeAreSection?.description ||
+                      "تقدّم عيادة True Smile Dental Clinic رعاية أسنان متكاملة..."}
                   </p>
                 </div>
               </div>
@@ -343,7 +475,7 @@ export default function About() {
             {/* Our Vision */}
             <div
               className="col-xl-4 col-lg-4 col-md-6 wow fadeInUp"
-              data-wow-delay="100ms"
+              data-wow-delay="200ms"
             >
               <div className="company-details__single glassy h-full">
                 <div className="company-details__single-inner">
@@ -351,12 +483,11 @@ export default function About() {
                     <span className="icon-book"></span>
                   </div>
                   <h3 className="company-details__title">
-                    <div>رؤيتنا</div>
+                    <div>{visionSection?.title || "رؤيتنا"}</div>
                   </h3>
                   <p className="company-details__text">
-                    أن نكون الوجهة الأولى والموثوقة لكل من يبحث عن ابتسامة صحية
-                    وجميلة، من خلال الابتكار المستمر وتطبيق أحدث تقنيات طب
-                    الأسنان العالمية.
+                    {visionSection?.description ||
+                      "أن نكون الوجهة الأولى والموثوقة..."}
                   </p>
                 </div>
               </div>
@@ -365,7 +496,7 @@ export default function About() {
             {/* Our Mission */}
             <div
               className="col-xl-4 col-lg-4 col-md-6 wow fadeInUp"
-              data-wow-delay="100ms"
+              data-wow-delay="300ms"
             >
               <div className="company-details__single glassy h-full">
                 <div className="company-details__single-inner">
@@ -373,12 +504,11 @@ export default function About() {
                     <span className="icon-award"></span>
                   </div>
                   <h3 className="company-details__title">
-                    <div>رسالتنا</div>
+                    <div>{missionSection?.title || "رسالتنا"}</div>
                   </h3>
                   <p className="company-details__text">
-                    تقديم خدمات أسنان شاملة بجودة عالية وشفافية كاملة في
-                    الأسعار، مع حرص دائم على راحة المريض ورضاه من خلال فريق عمل
-                    محترف وخبرة تمتد لأكثر من 20 عاماً.
+                    {missionSection?.description ||
+                      "تقديم خدمات أسنان شاملة بجودة عالية..."}
                   </p>
                 </div>
               </div>
@@ -386,7 +516,6 @@ export default function About() {
           </div>
         </div>
       </div>
-
       {/*Company Details End*/}
 
       {/*Contact Two Start*/}
@@ -403,12 +532,12 @@ export default function About() {
             <div className="section-title section-title--two text-center">
               <span className="section-title__tagline">تواصل معنا</span>
               <h2 className="section-title__title">
-                احصل على الدعم الخبيري — نحن على بُعد رسالة واحدة
+                {contactUsSection?.title ||
+                  "احصل على الدعم الخبيري — نحن على بُعد رسالة واحدة"}
               </h2>
               <p className="section-title__text">
-                سواء كان لديك استفسار أو تحتاج إلى تحديد موعد للفحص أو العلاج،
-                فريق True Smile جاهز لخدمتك. <br />
-                نسهل عليك متابعة رعايتك دون عناء أو توتر.
+                {contactUsSection?.description ||
+                  "سواء كان لديك استفسار أو تحتاج إلى تحديد موعد للفحص..."}
               </p>
             </div>
             <div className="contact-two__details-box">
@@ -426,14 +555,14 @@ export default function About() {
                     </p>
                   </div>
                 </li>
-                <li>
+                <li className="!mr-0 md:!mr-[30px]">
                   <div className="icon">
                     <span className="fa fa-phone"></span>
                   </div>
                   <div className="content">
                     <span>اتصل بنا هاتفياً</span>
                     <p style={{ direction: "ltr" }}>
-                      <Link href="tel:+201065014391">+20 10 6501 4391</Link>{" "}
+                      <Link href="tel:+201065014391">+20 10 6501 4391</Link>
                     </p>
                   </div>
                 </li>
@@ -459,64 +588,69 @@ export default function About() {
                 {...swiperOptions}
                 className="testimonial-one__carousel owl-carousel owl-theme thm-owl__carousel"
               >
-                {/* Testimonial 1 */}
-                <SwiperSlide>
-                  <div className="item glassy">
-                    <div className="testimonial-one__single">
-                      <div className="testimonial-one__client-img-box">
-                        <div className="testimonial-one__client-img">
-                          <img
-                            src="assets/images/mobilehub/testimonial-1-1.jpg"
-                            alt=""
-                          />
+                {testimonials.length > 0 ? (
+                  testimonials.map((testimonial) => (
+                    <SwiperSlide key={testimonial.id}>
+                      <div className="item glassy">
+                        <div className="testimonial-one__single">
+                          <div className="testimonial-one__client-img-box">
+                            <div className="testimonial-one__client-img">
+                              <img
+                                src={testimonial.image}
+                                alt={testimonial.name}
+                              />
+                            </div>
+                          </div>
+                          <div className="testimonial-one__client-info-box">
+                            <div className="testimonial-one__quote">
+                              <span className="icon-quote"></span>
+                            </div>
+                            <p className="testimonial-one__text">
+                              {testimonial.text}
+                            </p>
+                            <div className="testimonial-one__client-info">
+                              <h3>{testimonial.name}</h3>
+                              <p>
+                                {[...Array(parseInt(testimonial.rating))].map(
+                                  (_, i) => (
+                                    <span key={i}>⭐</span>
+                                  )
+                                )}
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div className="testimonial-one__client-info-box">
-                        <div className="testimonial-one__quote">
-                          <span className="icon-quote"></span>
+                    </SwiperSlide>
+                  ))
+                ) : (
+                  <SwiperSlide>
+                    <div className="item glassy">
+                      <div className="testimonial-one__single">
+                        <div className="testimonial-one__client-img-box">
+                          <div className="testimonial-one__client-img">
+                            <img
+                              src="assets/images/mobilehub/testimonial-1-1.jpg"
+                              alt=""
+                            />
+                          </div>
                         </div>
-                        <p className="testimonial-one__text">
-                          “عالجتني العيادة بسرعة ودقة من ألم قناة الجذر، ولم
-                          أشعر بأي ألم أثناء الجلسة. تجربة احترافية بكل
-                          المقاييس.”
-                        </p>
-                        <div className="testimonial-one__client-info">
-                          <h3>محمد عبد الله</h3>
-                          <p>مهندس</p>
+                        <div className="testimonial-one__client-info-box">
+                          <div className="testimonial-one__quote">
+                            <span className="icon-quote"></span>
+                          </div>
+                          <p className="testimonial-one__text">
+                            "عالجتني العيادة بسرعة ودقة من ألم قناة الجذر..."
+                          </p>
+                          <div className="testimonial-one__client-info">
+                            <h3>محمد عبد الله</h3>
+                            <p>مهندس</p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </SwiperSlide>
-
-                {/* Testimonial 2 */}
-                <SwiperSlide>
-                  <div className="item glassy">
-                    <div className="testimonial-one__single">
-                      <div className="testimonial-one__client-img-box">
-                        <div className="testimonial-one__client-img">
-                          <img
-                            src="assets/images/mobilehub/testimonial-1-1.jpg"
-                            alt=""
-                          />
-                        </div>
-                      </div>
-                      <div className="testimonial-one__client-info-box">
-                        <div className="testimonial-one__quote">
-                          <span className="icon-quote"></span>
-                        </div>
-                        <p className="testimonial-one__text">
-                          “التصميم الرقمي لابتسامتي قبل العلاج وفّر علي الكثير
-                          من الوقت والقلق. النتيجة كانت مطابقة تماماً لتوقعاتي.”
-                        </p>
-                        <div className="testimonial-one__client-info">
-                          <h3>خالد مصطفى</h3>
-                          <p>مهندس</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </SwiperSlide>
+                  </SwiperSlide>
+                )}
               </Swiper>
             </div>
           </div>
@@ -524,138 +658,146 @@ export default function About() {
       </section>
       {/*Testimonial One End*/}
 
-      {/*Team One Start*/}
-      {/* <section className="team-one">
+      <section className="team-one pt-0">
         <div className="container">
-          <div className="section-title text-center">
-            <span className="section-title__tagline">Meet Our Team</span>
-            <h2 className="section-title__title">Friendly & Trustworthy</h2>
+          <div className="section-title text-center" ref={teamSectionRef}>
+            <span className="section-title__tagline">تعرف على فريقنا</span>
+            <h2 className="section-title__title sm:text-7xl text-5xl font-bold">
+              فريقنا الطبي المتميز
+            </h2>
             <p className="section-title__text">
               <span className="font-bold text-xl text-black">
-                Meet the Experts Behind True Smile Dental Clinic
+                تعرف على الأطباء المتخصصين في عيادة True Smile
               </span>
               <br />
-              The people who bring your tech back to life
+              فريق من الخبراء المتفانين في خدمة صحة أسنانك
             </p>
           </div>
           <div className="row">
-            <div className="col-xl-4 col-lg-4">
-              <div className="team-one__single">
-                <div className="team-one__img-box">
-                  <div className="team-one__img">
-                    <img src="assets/images/mobilehub/team-1-1.jpg" alt="" />
+            {displayedDoctors.length > 0 ? (
+              displayedDoctors.map((doctor, index) => (
+                <div
+                  key={doctor.doctor_id}
+                  className="col-xl-4 col-lg-4 col-md-6 mb-4"
+                >
+                  <div className="team-one__single">
+                    <div className="team-one__img-box">
+                      <div className="team-one__img">
+                        <img
+                          src={doctor.doctor_image}
+                          alt={doctor.doctor_name}
+                          className="w-full h-[400px] md:h-[500px] object-cover"
+                        />
+                      </div>
+                      <div className="team-one__content">
+                        <h3 className="team-one__name">
+                          <Link href="team">{doctor.doctor_name}</Link>
+                        </h3>
+                        <p className="team-one__sub-title">
+                          {doctor.doctor_spscialise}
+                        </p>
+                        {doctor.doctor_desc && (
+                          <p className="text-sm mt-2 px-3 text-gray-600">
+                            {doctor.doctor_desc}
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div className="team-one__content">
-                    <h3 className="team-one__name">
-                      <Link href="team">Nicolas Marko</Link>
-                    </h3>
-                    <p className="team-one__sub-title">Master Technician</p>
-                  </div>
-                  <ul className="team-one__social list-unstyled">
-                    <li>
-                      <Link href="#">
-                        <span className="fab fa-facebook-f"></span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="#">
-                        <span className="fab fa-twitter"></span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="https://www.instagram.com/mobihubmk/" target="_blank"> 
-                        <span className="fab fa-instagram"></span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="#">
-                        <span className="fab fa-pinterest-p"></span>
-                      </Link>
-                    </li>
-                  </ul>
                 </div>
-              </div>
-            </div>
-           
-            <div className="col-xl-4 col-lg-4">
-              <div className="team-one__single">
-                <div className="team-one__img-box">
-                  <div className="team-one__img">
-                    <img src="assets/images/mobilehub/team-1-2.jpg" alt="" />
+              ))
+            ) : (
+              // Fallback doctors
+              <>
+                <div className="col-xl-4 col-lg-4">
+                  <div className="team-one__single">
+                    <div className="team-one__img-box">
+                      <div className="team-one__img">
+                        <img
+                          src="assets/images/mobilehub/team-1-1.jpg"
+                          alt=""
+                        />
+                      </div>
+                      <div className="team-one__content">
+                        <h3 className="team-one__name">
+                          <Link href="team">د. لؤي ساجد</Link>
+                        </h3>
+                        <p className="team-one__sub-title">
+                          طبيب أسنان استشاري
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="team-one__content">
-                    <h3 className="team-one__name">
-                      <Link href="team">Joseph Dico</Link>
-                    </h3>
-                    <p className="team-one__sub-title">Digital Marketing</p>
-                  </div>
-                  <ul className="team-one__social list-unstyled">
-                    <li>
-                      <Link href="#">
-                        <span className="fab fa-facebook-f"></span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="#">
-                        <span className="fab fa-twitter"></span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="#">
-                        <span className="fab fa-instagram"></span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="#">
-                        <span className="fab fa-pinterest-p"></span>
-                      </Link>
-                    </li>
-                  </ul>
                 </div>
-              </div>
-            </div>
-          
-            <div className="col-xl-4 col-lg-4">
-              <div className="team-one__single">
-                <div className="team-one__img-box">
-                  <div className="team-one__img">
-                    <img src="assets/images/mobilehub/team-1-3.jpg" alt="" />
+
+                <div className="col-xl-4 col-lg-4">
+                  <div className="team-one__single">
+                    <div className="team-one__img-box">
+                      <div className="team-one__img">
+                        <img
+                          src="assets/images/mobilehub/team-1-2.jpg"
+                          alt=""
+                        />
+                      </div>
+                      <div className="team-one__content">
+                        <h3 className="team-one__name">
+                          <Link href="team">د. سارة محمد</Link>
+                        </h3>
+                        <p className="team-one__sub-title">
+                          أخصائية تقويم أسنان
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="team-one__content">
-                    <h3 className="team-one__name">
-                      <Link href="team">Nicolas Marko</Link>
-                    </h3>
-                    <p className="team-one__sub-title">Master Technician</p>
-                  </div>
-                  <ul className="team-one__social list-unstyled">
-                    <li>
-                      <Link href="#">
-                        <span className="fab fa-facebook-f"></span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="#">
-                        <span className="fab fa-twitter"></span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="#">
-                        <span className="fab fa-instagram"></span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="#">
-                        <span className="fab fa-pinterest-p"></span>
-                      </Link>
-                    </li>
-                  </ul>
                 </div>
-              </div>
-            </div>
+
+                <div className="col-xl-4 col-lg-4">
+                  <div className="team-one__single">
+                    <div className="team-one__img-box">
+                      <div className="team-one__img">
+                        <img
+                          src="assets/images/mobilehub/team-1-3.jpg"
+                          alt=""
+                        />
+                      </div>
+                      <div className="team-one__content">
+                        <h3 className="team-one__name">
+                          <Link href="team">د. أحمد حسن</Link>
+                        </h3>
+                        <p className="team-one__sub-title">
+                          أخصائي زراعة أسنان
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
+
+          {/* Show More/Less Button - Only show if more than 3 doctors */}
+          {allDoctors.length > 3 && (
+            <div className="row mt-5">
+              <div className="col-xl-12 text-center">
+                <button onClick={handleToggle} className="thm-btn">
+                  {showAllDoctors ? (
+                    <>
+                      <span className="ml-2">عرض أقل</span>
+                      <i className="fa fa-chevron-up"></i>
+                    </>
+                  ) : (
+                    <>
+                      <span className="ml-2">عرض المزيد</span>
+                      <i className="fa fa-chevron-down"></i>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-      </section> */}
-      {/*Team One End*/}
+      </section>
+      {/*Team One End */}
     </Layout>
   );
 }
