@@ -1,16 +1,57 @@
 import Link from "next/link";
 import React from "react";
+import {
+  FaAward,
+  FaUserMd,
+  FaShieldAlt,
+  FaHandHoldingMedical,
+} from "react-icons/fa";
+import {
+  MdVerifiedUser,
+  MdHealthAndSafety,
+  MdSanitizer,
+  MdCleanHands,
+} from "react-icons/md";
+import { GiHealthNormal, GiMedicalPack } from "react-icons/gi";
+import { BsShieldCheck, BsHeartPulseFill } from "react-icons/bs";
+import { RiCustomerService2Fill, RiServiceFill } from "react-icons/ri";
 
 const WhyChoose = ({ whyUs }) => {
-  // Icon mapping
-  const iconMap = [
-    "icon-award",
-    "icon-customer-service",
-    "icon-security",
-    "icon-computer-1",
+  // Dental-themed icons array
+  const dentalIcons = [
+    <FaAward className="text-5xl" />, // For warranty/guarantee
+    <RiCustomerService2Fill className="text-5xl" />, // For customer service
+    <FaShieldAlt className="text-5xl" />, // For safety/security
+    <MdSanitizer className="text-5xl" />, // For sterilization
   ];
 
   const delays = ["100ms", "200ms", "300ms", "400ms"];
+
+  // Function to select appropriate icon based on content
+  const getIcon = (title, index) => {
+    const lowerTitle = title?.toLowerCase() || "";
+
+    if (lowerTitle.includes("جودة")) {
+      return <FaAward className="text-5xl text-[var(--saged-base)]" />;
+    } else if (lowerTitle.includes("خدمة") || lowerTitle.includes("عملاء")) {
+      return (
+        <RiCustomerService2Fill className="text-5xl text-[var(--saged-base)]" />
+      );
+    } else if (lowerTitle.includes("سلامة") || lowerTitle.includes("أمان")) {
+      return (
+        <MdHealthAndSafety className="text-5xl text-[var(--saged-base)]" />
+      );
+    } else if (lowerTitle.includes("تعقيم") || lowerTitle.includes("نظافة")) {
+      return <MdSanitizer className="text-5xl text-[var(--saged-base)]" />;
+    } else if (lowerTitle.includes("طبي") || lowerTitle.includes("علاج")) {
+      return (
+        <FaHandHoldingMedical className="text-5xl text-[var(--saged-base)]" />
+      );
+    } else {
+      // Default to cycling through dental icons
+      return dentalIcons[index % dentalIcons.length];
+    }
+  };
 
   return (
     <section className="why-choose-one" dir="rtl">
@@ -32,8 +73,8 @@ const WhyChoose = ({ whyUs }) => {
                 data-wow-delay={delays[index] || "100ms"}
               >
                 <div className="why-choose-one__single glassy-1">
-                  <div className="why-choose-one__icon">
-                    <span className={iconMap[index] || "icon-award"}></span>
+                  <div className="why-choose-one__icon flex items-center justify-center">
+                    {getIcon(item.title, index)}
                   </div>
                   <div className="why-choose-one__content">
                     <h3 className="why-choose-one__title">{item.title}</h3>
@@ -43,15 +84,15 @@ const WhyChoose = ({ whyUs }) => {
               </div>
             ))
           ) : (
-            // Fallback
+            // Fallback with React Icons
             <>
               <div
                 className="col-xl-6 col-lg-6 wow fadeInUp"
                 data-wow-delay="100ms"
               >
                 <div className="why-choose-one__single glassy-1">
-                  <div className="why-choose-one__icon">
-                    <span className="icon-award"></span>
+                  <div className="why-choose-one__icon flex items-center justify-center">
+                    <FaAward className="text-5xl" />
                   </div>
                   <div className="why-choose-one__content">
                     <h3 className="why-choose-one__title">
@@ -68,8 +109,8 @@ const WhyChoose = ({ whyUs }) => {
                 data-wow-delay="200ms"
               >
                 <div className="why-choose-one__single glassy-1">
-                  <div className="why-choose-one__icon">
-                    <span className="icon-customer-service"></span>
+                  <div className="why-choose-one__icon flex items-center justify-center">
+                    <RiCustomerService2Fill className="text-5xl" />
                   </div>
                   <div className="why-choose-one__content">
                     <h3 className="why-choose-one__title">خدمة ودودة وصادقة</h3>
@@ -85,8 +126,8 @@ const WhyChoose = ({ whyUs }) => {
                 data-wow-delay="300ms"
               >
                 <div className="why-choose-one__single glassy-1">
-                  <div className="why-choose-one__icon">
-                    <span className="icon-security"></span>
+                  <div className="why-choose-one__icon flex items-center justify-center">
+                    <MdHealthAndSafety className="text-5xl" />
                   </div>
                   <div className="why-choose-one__content">
                     <h3 className="why-choose-one__title">
@@ -104,8 +145,8 @@ const WhyChoose = ({ whyUs }) => {
                 data-wow-delay="400ms"
               >
                 <div className="why-choose-one__single glassy-1">
-                  <div className="why-choose-one__icon">
-                    <span className="icon-computer-1"></span>
+                  <div className="why-choose-one__icon flex items-center justify-center">
+                    <MdSanitizer className="text-5xl" />
                   </div>
                   <div className="why-choose-one__content">
                     <h3 className="why-choose-one__title">ضمان تعقيم كامل</h3>

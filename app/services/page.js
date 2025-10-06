@@ -12,6 +12,25 @@ import axios from "axios";
 import { base_url } from "../../utils/base_url";
 import { toast } from "../../components/ui/Toast";
 
+// Import dental-themed icons from React Icons
+import {
+  FaTooth,
+  FaTeeth,
+  FaUserMd,
+  FaStethoscope,
+  FaSyringe,
+  FaHospitalAlt,
+} from "react-icons/fa";
+import {
+  MdMedicalServices,
+  MdHealthAndSafety,
+  MdLocalHospital,
+  MdCleaningServices,
+} from "react-icons/md";
+import { GiTooth, GiToothbrush, GiMicroscope } from "react-icons/gi";
+import { TbDental } from "react-icons/tb";
+import { BsShieldPlus, BsHeartPulse } from "react-icons/bs";
+
 const swiperOptions = {
   modules: [Autoplay, Pagination, Navigation],
   slidesPerView: 1,
@@ -38,6 +57,16 @@ export default function Services() {
   });
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Dental clinic themed icons array
+  const dentalIcons = [
+    <FaTooth className="text-5xl" />, // For examination/general
+    <TbDental className="text-5xl" />, // For cosmetic fillings
+    <FaUserMd className="text-5xl" />, // For oral surgery
+    <FaTeeth className="text-5xl" />, // For orthodontics
+    <GiToothbrush className="text-5xl" />, // For cleaning
+    <MdMedicalServices className="text-5xl" />, // For medical services
+  ];
 
   // Fetch services data
   const getServicesData = async () => {
@@ -126,13 +155,7 @@ export default function Services() {
               {services.length > 0 ? (
                 services.map((service, index) => {
                   const delays = ["100ms", "200ms", "300ms", "400ms", "500ms"];
-                  const iconClasses = [
-                    "icon-phone",
-                    "icon-tap",
-                    "icon-laptop",
-                    "icon-computer",
-                    "icon-smartphone",
-                  ];
+
                   const iconColorClasses = [
                     "",
                     "services-two__icon--two",
@@ -140,6 +163,37 @@ export default function Services() {
                     "services-two__icon--four",
                     "services-two__icon--five",
                   ];
+
+                  // Select appropriate icon based on service title
+                  const getServiceIcon = (title, idx) => {
+                    const lowerTitle = title.toLowerCase();
+
+                    if (
+                      lowerTitle.includes("فحص") ||
+                      lowerTitle.includes("تنظيف")
+                    ) {
+                      return <MdCleaningServices className="text-5xl" />;
+                    } else if (
+                      lowerTitle.includes("حشو") ||
+                      lowerTitle.includes("تجميل")
+                    ) {
+                      return <TbDental className="text-5xl" />;
+                    } else if (
+                      lowerTitle.includes("جراح") ||
+                      lowerTitle.includes("خلع")
+                    ) {
+                      return <FaUserMd className="text-5xl" />;
+                    } else if (lowerTitle.includes("تقويم")) {
+                      return <FaTeeth className="text-5xl" />;
+                    } else if (lowerTitle.includes("زراع")) {
+                      return <GiTooth className="text-5xl" />;
+                    } else if (lowerTitle.includes("تبييض")) {
+                      return <FaTooth className="text-5xl" />;
+                    } else {
+                      // Default to cycling through dental icons
+                      return dentalIcons[idx % dentalIcons.length];
+                    }
+                  };
 
                   return (
                     <div
@@ -151,20 +205,30 @@ export default function Services() {
                         <div className="services-two__single-inner">
                           <div
                             className={`services-two__icon ${
-                              iconColorClasses[index] || ""
-                            }`}
+                              iconColorClasses[
+                                index % iconColorClasses.length
+                              ] || ""
+                            } flex items-center justify-center`}
                           >
-                            <span
-                              className={iconClasses[index] || "icon-phone"}
-                            ></span>
+                            {getServiceIcon(service.title, index)}
                           </div>
                           <h3 className="services-two__title">
-                            <Link href={`/services-details/${service.id}`}>
-                              {service.title}
-                            </Link>
+                            {service.title}
                           </h3>
-                          <p className="services-two__text">
-                            {service.features?.split("**CAMP**")[0] || ""}
+                          <p className="services-two__text flex flex-col justify-start gap-2 items-start text-[18px]">
+                            {service.features
+                              ?.split("**CAMP**")
+                              ?.map((feature, featureIndex) => (
+                                <div
+                                  key={featureIndex}
+                                  className="flex items-start gap-2"
+                                >
+                                  <span className="text-primary">
+                                    {featureIndex + 1}.
+                                  </span>
+                                  <span>{feature}</span>
+                                </div>
+                              ))}
                           </p>
                         </div>
                       </div>
